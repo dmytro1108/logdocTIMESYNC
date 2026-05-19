@@ -1,0 +1,160 @@
+.mainview {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  background: #05070c;
+  color: white;
+  font-family: Inter, Arial, sans-serif;
+  gap: 28px;
+}
+
+.rightSide {
+  width: 260px;
+  height: 100vh;             /* full height */
+  border: 1px solid #d6d6d6;
+  padding: 4px 8px;
+  font-size: 12px;
+  margin-bottom: 6px;
+  box-sizing: border-box;
+  overflow-y: auto;          /* scroll when boards list grows */
+  background: #fafafa;
+}
+
+.tabRow {
+  height: 38px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.cardBlock {
+  border: 1px solid #d6d6d6; 
+  border-radius: 8px;       
+  padding: 6px 8px;            
+  margin-top: 10px;      
+  box-shadow: 0 1px 2px rgba(209, 218, 255, 0.06);
+  cursor: grab;
+}
+
+.leftSide {
+  padding: 16px;
+}
+
+.tabsView {
+  height: 30px;
+  padding: 4px 8px;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.task:active {
+  cursor: grabbing;
+}
+
+button { /* button style */
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #fff;
+  cursor: pointer;
+}
+button:hover {
+  background: #f6f6f6;
+}
+
+input { /* text field style */
+  box-sizing: border-box;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 19px;
+  background: #fff;
+}
+
+.mileageToolHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 34px;
+}
+
+.mileageRow {
+  display: grid;
+  grid-template-columns: 430px 1fr;
+  align-items: center;
+  gap: 34px;
+  margin-bottom: 30px;
+}
+
+.mileageInput {
+  width: 100%;
+  height: 76px;
+  border-radius: 18px;
+  border: 2px solid #3b82f6;
+  background: #02040a;
+  color: white;
+  font-size: 46px;
+  padding: 0 24px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.arrowNote {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: white;
+}
+
+.drawArrow {
+  color: #60a5fa;
+  font-size: 74px;
+  font-weight: 900;
+  line-height: 1;
+  transform: scaleX(1.35);
+}
+
+.businessMilesCard {
+  border: 1px solid #1f2937;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.72);
+  padding: 24px;
+}
+
+.saveMileageButton {
+  width: 300px;
+  height: 70px;
+  border-radius: 16px;
+  border: none;
+  background: white;
+  color: black;
+  font-size: 24px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.saveMileageButton:hover {
+  background: #e5e7eb;
+}
+
+.whiteArrow .drawArrow {
+  color: white;
+}
+
+.timeHintRow {
+  display: grid;
+  grid-template-columns: 560px 1fr;
+  align-items: center;
+  gap: 28px;
+  margin-top: 8px;
+}
+
+.timeHint {
+  border: 2px dashed rgba(255, 255, 255, 0.65);
+  border-radius: 18px;
+  padding: 20px 24px;
+  font-size: 22px;
+  margin: 0;
+}

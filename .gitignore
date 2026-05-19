@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+build/
+
+# Database
+*.db
+*.sqlite
+
+# OS files
+.DS_Store
+
+#credentials for mariadb server
+src/main/credentials.json
+
+#python cache files
+__pycache__
