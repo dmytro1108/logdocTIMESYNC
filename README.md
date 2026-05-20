@@ -61,7 +61,7 @@ npm run build      # typecheck + production build
 
 T-Tool currently uses local SQLite databases in the app's userData folder. See:
 
-- `/home/runner/work/symmetrical-spork/symmetrical-spork/SETUP_SQLITE.md`
+- `./SETUP_SQLITE.md`
 
 ## Status
 
