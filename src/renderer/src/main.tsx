@@ -3,32 +3,17 @@ import ReactDOM from 'react-dom/client'
 import Accounts from './components/Accounts'
 import WebSocketLink from './components/WebSocketLink'
 
-import Board from './components/Board'
+import Board from './components/Dashboard'
 
 import './assets/main.css';
 import { createBoard, getBoardByID, getBoardsByUser, updateBoard, deleteBoard } from './ipc'
-import { exportToFile } from './ipc' 
+import { exportToFile, logMiles, retrieveAllMiles, deleteAllMiles, deleteMilesById } from './ipc' 
 
 //Constants for easier style prototyping
-const COLUMN_BORDER: string = "1px solid #d6d6d6";
-const COLUMN_WIDTH: string = "240px";
-const COLUMN_HEIGHT: string = "100vh";
 const COLUMN_TEXT_COLOR: string = "black";
-const COLUMN_FONT_WEIGHT: string = "bold";
-const COLUMN_BACKGROUND_COLOR: string = "white";
-const COLUMN_FONT_STYLE: string = "normal";
-
-//single size to keep both button and column text the same size
 const COLUMN_BUTTON_SIZE: string = "150%";
 const COLUMN_FONT_SIZE: string = COLUMN_BUTTON_SIZE;
 const BUTTON_FONT_SIZE: string = COLUMN_BUTTON_SIZE;
-
-//single size to keep padding consistant
-const COLUMN_PADDING: string = "12px";
-const COLUMN_PADDING_LEFT: string = COLUMN_PADDING;
-const COLUMN_PADDING_RIGHT: string = COLUMN_PADDING;
-const COLUMN_PADDING_TOP: string = COLUMN_PADDING;
-const COLUMN_PADDING_BOTTOM: string = COLUMN_PADDING;
 
 const USER_ID = 1
 
@@ -54,6 +39,8 @@ type DisplayColProp = { // render board state with columns
   totalMiles: string
   theme: "dark" | "light"
   activeTool: "mileage" | "documents" | "notifications" | null
+  mileageLogs: any[]
+  lastEndMiles: number | null
 }
 
 class MainView extends React.Component<MainViewProps, DisplayColProp> {
@@ -83,7 +70,9 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
       totalMiles: '',
       demoBoardID: -1,
       activeTool: null,
-      theme: this.theme
+      theme: this.theme,
+      mileageLogs: [],
+      lastEndMiles: null
     }
     
     //create a single WebSocketLink object, since ideally the location of the server would never change.
@@ -173,6 +162,48 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     })
   }
 
+  loadLastEndMiles = async () => {
+    const logs = await retrieveAllMiles()
+  
+    if (logs.length > 0) {
+      this.setState({
+        lastEndMiles: logs[0].endMiles,
+        mileageLogs: logs
+      })
+    }
+  }
+
+  safeLog = async () => {
+    const start = Number(this.state.startingMiles)
+    const end = Number(this.state.endingMiles)
+  
+    if (Number.isNaN(start) || Number.isNaN(end)) {
+      this.setState({ debugMsg: "enter valid mileage numbers" })
+      return
+    }
+  
+    if (end < start) {
+      this.setState({ debugMsg: "ending mileage cannot be lower than starting mileage" })
+      return
+    }
+  
+    if (this.state.lastEndMiles !== null && start < this.state.lastEndMiles) {
+      this.setState({
+        debugMsg: `starting mileage cannot be lower than last ending mileage: ${this.state.lastEndMiles}`
+      })
+      return
+    }
+    
+    await logMiles(start, end, "", "")
+    await this.loadLastEndMiles()
+  
+    this.setState({
+      startingMiles: "",
+      endingMiles: "",
+      debugMsg: `logged: ${end - start} miles`
+    })
+  }
+
   render() {
 
     const loginWindow = (
@@ -235,14 +266,9 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
         <div className="mileageRow">
           <div className="mileageInputSide">
             
-            <input
-              className="mileageInput"
-              placeholder="0"
-              value={this.state.startingMiles}
-              onChange={(e) => this.setState({ startingMiles: e.target.value })}
-            />
+            <input className="mileageInput" placeholder={this.state.lastEndMiles !== null ? String(this.state.lastEndMiles) : "0"} value={this.state.startingMiles} onChange={(e) => this.setState({ startingMiles: e.target.value })}/>
+          
           </div>
-    
           <div className="arrowNote">
             <span className="drawArrow">⬅</span>
             <p style={{ fontSize: COLUMN_FONT_SIZE }}>starting miles here</p>
@@ -251,12 +277,7 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     
         <div className="mileageRow">
           <div className="mileageInputSide">
-            <input
-              className="mileageInput"
-              placeholder="0"
-              value={this.state.endingMiles}
-              onChange={(e) => this.setState({ endingMiles: e.target.value })}
-            />
+            <input className="mileageInput" placeholder="😍" value={this.state.endingMiles} onChange={(e) => {this.setState({ endingMiles: e.target.value })}}/>
           </div>
     
           <div className="arrowNote">
@@ -280,9 +301,9 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
         </div>
     
         <div className="mileageRow saveRow">
-          <button className="saveMileageButton" onClick={() => this.sum()}>
-            💾 Save Mileage Log
-          </button>
+        <button className="saveMileageButton" onClick={async () => { await this.safeLog()}}>
+          💾 save log
+        </button>
     
           <div className="arrowNote whiteArrow">
             <span className="drawArrow">⬅</span>
@@ -292,7 +313,7 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     
         <div className="timeHintRow">
           <p className="timeHint">
-            🕒 Today’s date and time will be attached automatically.
+            🕒 date included
           </p>
     
           <div className="arrowNote whiteArrow">
@@ -300,6 +321,56 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
             <p>we’ll add today’s<br />date & time</p>
           </div>
         </div>
+      </div>
+    )
+    const mileageHistoryDashboard = (
+      <div className="historyDashboard">
+        <h2>Mileage Log History</h2>
+    
+        <div className="historyButtons">
+          <button
+            onClick={async () => {
+              const logs = await retrieveAllMiles()
+              this.setState({ mileageLogs: logs })
+            }}
+          >
+            refresh logs
+          </button>
+    
+          <button
+            className="dangerButton"
+            onClick={async () => {
+              await deleteAllMiles()
+              this.setState({ mileageLogs: [], debugMsg: "all mileage logs deleted" })
+            }}
+          >
+            delete all history
+          </button>
+        </div>
+    
+        {this.state.mileageLogs.map((log) => (
+          <div className="historyLogCard" key={log.id}>
+            <div className="daySeparator">
+              {new Date(log.dateCreated).toLocaleDateString()}
+            </div>
+    
+            <div className="logRow">
+              <strong>{log.totalMiles} miles</strong>
+              <span>{log.fromLocation || "from"} → {log.toLocation || "to"}</span>
+    
+              <button
+                className="smallDangerButton"
+                onClick={async () => {
+                  await deleteMilesById(log.id)
+                  const logs = await retrieveAllMiles()
+                  this.setState({ mileageLogs: logs })
+                }}
+              >
+                delete
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     )
     
@@ -325,8 +396,11 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
           </div>
 
           <div className="tabsView">
-            <button className="toolImageButton" onClick={() => this.setState({ activeTool: "mileage" })}>
+            <button className="toolImageButton" onClick={async () => {this.setState({ activeTool: "mileage" }); await this.loadLastEndMiles()}}>
               <img src="/icon.png" alt="Mileage Tracker" width={70} height={70} />
+            </button>
+            <button className="toolImageButton" onClick={() => retrieveAllMiles()}>
+              <img src="/icon2.png" alt="show milage history" width={70} height={70} />
             </button>
             
           </div>
@@ -339,6 +413,7 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
 
           <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>
             {this.state.activeTool === "mileage" ? mileageWindow : null}
+            {this.state.activeTool === "mileage" ? mileageHistoryDashboard : null}
           </div>
 
           <div style={{display: "flex"}}>

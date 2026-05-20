@@ -73,6 +73,7 @@ input { /* text field style */
   background: #fff;
 }
 
+/* mileage tool styles */
 .mileageToolHeader {
   display: flex;
   align-items: center;
@@ -157,4 +158,52 @@ input { /* text field style */
   padding: 20px 24px;
   font-size: 22px;
   margin: 0;
+}
+
+/* mileage tool tracker window styles */
+.historyDashboard {
+  margin-top: 24px;
+  width: 760px;
+  background: #f8fafc;
+  color: #111827;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.historyButtons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.historyLogCard {
+  margin-bottom: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  border: 1px solid #d1d5db;
+}
+
+.daySeparator {
+  background: #bfdbfe;
+  padding: 8px 12px;
+  font-weight: 800;
+}
+
+.logRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+}
+
+.dangerButton {
+  background: #7f1d1d;
+  color: white;
+}
+
+.smallDangerButton {
+  background: #dc2626;
+  color: white;
+  border-radius: 8px;
 }

@@ -15,50 +15,27 @@ class DatabaseConnection {
 
     private initializeSchema() {
 
-        /*
-        Commented out to separate accounts DB
         this.db.prepare(`
-            CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY,
-            createdAt INTEGER,
-            username TEXT,
-            password TEXT
+            
+            create table if not exists mileage_log (
+                id integer primary key,
+                dateCreated integer,
+                startMiles integer,
+                endMiles integer,
+                totalMiles integer,
+                fromLocation varchar(255),
+                toLocation varchar(255)
             )
         `).run()
-        */
 
         this.db.prepare(`
             CREATE TABLE IF NOT EXISTS boards (
             id INTEGER PRIMARY KEY,
-            createdAt INTEGER,
+            dateCreated INTEGER,
             title TEXT,
             description TEXT,
             userID INTEGER
             /* FOREIGN KEY (userID) REFERENCES users(id) */
-            )
-        `).run()
-
-        this.db.prepare(`
-            CREATE TABLE IF NOT EXISTS columns (
-            id INTEGER PRIMARY KEY,
-            createdAt INTEGER,
-            title TEXT, 
-            position INTEGER,
-            boardID INTEGER,
-            FOREIGN KEY (boardID) REFERENCES boards(id) ON DELETE CASCADE
-            UNIQUE(boardID, position)
-            )
-        `).run()
-
-        this.db.prepare(`
-            CREATE TABLE IF NOT EXISTS cards (
-            id INTEGER PRIMARY KEY,
-            createdAt INTEGER,
-            title TEXT, 
-            description TEXT,
-            position INTEGER,
-            columnID INTEGER,
-            FOREIGN KEY (columnID) REFERENCES columns(id) ON DELETE CASCADE
             )
         `).run()
 

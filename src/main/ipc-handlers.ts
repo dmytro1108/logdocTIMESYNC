@@ -1,9 +1,7 @@
 import { ipcMain, dialog, BrowserWindow} from 'electron';
 import { BoardRepository } from './database/BoardRepo';
-import { ColumnRepository } from './database/ColumnRepo';
-import { CardRepository } from './database/CardRepo';
 import { exportToJSON } from './database/Export';
-import { Board, Column, Card } from '../shared/types';
+import { Dashboard} from '../shared/types';
 import fs from 'fs'
 import { error } from 'console';
 
@@ -13,21 +11,17 @@ export function registerBoardHandlers() {
         const boardRepo = new BoardRepository()
         const createdAt = Date.now()
 
-        const newBoard: Board = {
-            id: 0,
-            title: board.title,
-            description: board.description,
-            createdAt: createdAt,
-            userID: board.userID
+        const newBoard: Dashboard = {
+            year: board.year,
+            totalMiles: board.totalMiles,
+            totalExpenses: board.totalExpenses,
+            documentCount: board.documentCount,
+            upcomingDeadlineCount: board.upcomingDeadlineCount,
+            id: board.id
         }
 
         const result = boardRepo.save(newBoard)
         return { ...newBoard, id: result.lastInsertRowid }
-    })
-
-    ipcMain.handle('board:getByUser', async(_event, userID) => {
-        const boardRepo = new BoardRepository()
-        return boardRepo.findByUser(userID)
     })
 
     ipcMain.handle('board:getByBoardID', async(_event, boardID) => {
@@ -38,12 +32,13 @@ export function registerBoardHandlers() {
     ipcMain.handle('board:update', async(_event, board) => {
         const boardRepo = new BoardRepository()
 
-        const updatedBoard: Board = {
-            id: board.id,
-            title: board.title,
-            description: board.description,
-            createdAt: board.createdAt,
-            userID: board.userID
+        const updatedBoard: Dashboard = {
+            year: board.year,
+            totalMiles: board.totalMiles,
+            totalExpenses: board.totalExpenses,
+            documentCount: board.documentCount,
+            upcomingDeadlineCount: board.upcomingDeadlineCount,
+            id: board.id
         }
         return boardRepo.update(updatedBoard)
     })
@@ -97,48 +92,6 @@ export function registerBoardHandlers() {
                 return { success: false, error: e.message }
             } 
         }
-    })
-}
-
-export function registerColumnHandlers() {
-    ipcMain.handle('column:create', async(_event, column) => {
-        const columnRepo = new ColumnRepository()
-        const createdAt = Date.now()
-
-        const newColumn = {
-            id: 0,
-            title: column.title,
-            createdAt: createdAt,
-            position: column.position,
-            boardID: column.boardID
-        }
-
-        const result = columnRepo.save(newColumn)                                                                             
-        return { ...newColumn, id: result.lastInsertRowid }
-    })
-
-    ipcMain.handle('column:getByBoard', async(_event, boardID) => {
-        const columnRepo = new ColumnRepository()
-        return columnRepo.findByBoard(boardID)
-    })
-
-    ipcMain.handle('column:update', async(_event, column) => {
-        const columnRepo = new ColumnRepository()
-
-        const updatedColumn = {
-            id: column.id,
-            title: column.title,
-            createdAt: column.createdAt,
-            position: column.position,
-            boardID: column.boardID
-        }
-
-        return columnRepo.update(updatedColumn)
-    })
-
-    ipcMain.handle('column:delete', async(_event, columnID) => {
-        const columnRepo = new ColumnRepository()
-        return columnRepo.delete(columnID)
     })
 }
 
@@ -198,46 +151,37 @@ export function registerAccountHandlers() {
     })
 }
 
-export function registerCardHandlers() {
-    ipcMain.handle('card:create', async(_event, card) => {
-        const cardRepo = new CardRepository()
-        const createdAt = Date.now()
+// Handlers for mileage logging tool
+import { MileageLogRepo } from './database/Tools'
 
-        const newCard = {
-            id: 0,
-            title: card.title,
-            description: card.description,
-            createdAt: createdAt,
-            position: card.position,
-            columnID: card.columnID
-        }
-
-        const result = cardRepo.save(newCard)                                                                                 
-        return { ...newCard, id: result.lastInsertRowid }
+export function registerMileageHandlers() {
+    // save mileage log
+    ipcMain.handle('mileage:log', async(_event, data) => {
+        const mileageRepo = new MileageLogRepo()
+      
+        return mileageRepo.saveMiles(
+          data.startMiles,
+          data.endMiles,
+          data.fromLocation,
+          data.toLocation
+        )
     })
 
-    ipcMain.handle('card:getByColumn', async(_event, columnID) => {
-        const cardRepo = new CardRepository()
-        return cardRepo.findByColumn(columnID)
+    // get all mileage logs for display in UI
+    ipcMain.handle('mileage:retrieveAll', async(_event) => {
+        const mileageRepo = new MileageLogRepo()
+        return mileageRepo.retrieveAllMiles()
     })
 
-    ipcMain.handle('card:update', async(_event, card) => {
-        const cardRepo = new CardRepository()
-
-        const updatedCard = {
-            id: card.id,
-            title: card.title,
-            description: card.description,
-            createdAt: card.createdAt,
-            position: card.position,
-            columnID: card.columnID
-        }
-
-        return cardRepo.update(updatedCard)
+    // delete one record
+    ipcMain.handle('mileage:deleteById', async (_event, id) => {
+        const mileageRepo = new MileageLogRepo()
+        return mileageRepo.deleteMilesById(Number(id))
     })
-
-    ipcMain.handle('card:delete', async(_event, cardID) => {
-        const cardRepo = new CardRepository()
-        return cardRepo.delete(cardID)
+    
+    // remove the entire log history
+    ipcMain.handle('mileage:deleteAll', async () => {
+        const mileageRepo = new MileageLogRepo()
+        return mileageRepo.deleteAllMiles()
     })
 }

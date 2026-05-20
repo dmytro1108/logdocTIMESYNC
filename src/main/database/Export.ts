@@ -1,27 +1,19 @@
 import { BoardRepository } from './BoardRepo'
-import { ColumnRepository } from './ColumnRepo'
-import { CardRepository } from './CardRepo'
-import { BoardExport, ColumnExport } from '../../shared/types'
+import { Dashboard, DashboardExport } from '../../shared/types'
 
-export function exportToJSON(board_id: number) {
+export function exportToJSON(id: number) {
 
     const boardRepo = new BoardRepository()
-    const columnRepo = new ColumnRepository()
-    const cardRepo = new CardRepository()
 
-    let boardExp: BoardExport
-    let columnExp: ColumnExport [] = []
-
-    const columns = columnRepo.findByBoard(board_id)
-
-    for (const c of columns) {
-        const cards = cardRepo.findByColumn(c.id)
-        columnExp.push({column: c, cards: cards})
-    }
+    let boardExp: DashboardExport
 
     boardExp = {
-        board: boardRepo.findByID(board_id),
-        columns: columnExp
+        year: boardRepo.findByID(id).year,
+        totalMiles: boardRepo.findByID(id).totalMiles,
+        totalExpenses: boardRepo.findByID(id).totalExpenses,
+        documentCount: boardRepo.findByID(id).documentCount,
+        upcomingDeadlineCount: boardRepo.findByID(id).upcomingDeadlineCount,
+        id: boardRepo.findByID(id).id
     }
 
     return JSON.stringify(boardExp, null, 2)

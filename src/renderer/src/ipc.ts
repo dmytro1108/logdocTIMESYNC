@@ -1,22 +1,22 @@
-import { Board, Column, Card } from '../../shared/types' 
+import { Dashboard} from '../../shared/types' 
 
 // IPC wrapper functions for database operations
 // Use these instead of calling ipcRenderer.invoke...
 
 // Boards
-export async function createBoard(title: string, description: string, userID: number): Promise<Board> {
+export async function createBoard(title: string, description: string, userID: number): Promise<Dashboard> {
   return window.electron.ipcRenderer.invoke('board:create', { title, description, userID })
 }
 
-export async function getBoardByID(boardID: number): Promise<Board> {
+export async function getBoardByID(boardID: number): Promise<Dashboard> {
   return window.electron.ipcRenderer.invoke('board:getByBoardID', boardID)
 }
 
-export async function getBoardsByUser(userID: number): Promise<Board[]> {
+export async function getBoardsByUser(userID: number): Promise<Dashboard[]> {
   return window.electron.ipcRenderer.invoke('board:getByUser', userID)
 }
 
-export async function updateBoard(board: Board): Promise<void> {
+export async function updateBoard(board: Dashboard): Promise<void> {
   return window.electron.ipcRenderer.invoke('board:update', board)
 }
 
@@ -28,40 +28,23 @@ export async function exportToFile(boardID: number): Promise<{ success: boolean,
   return window.electron.ipcRenderer.invoke('board:exportBoardToFile', boardID)
 }
 
-// Columns 
-export async function createColumn(title: string, position: number, boardID: number): Promise<Column> {
-  return window.electron.ipcRenderer.invoke('column:create', { title, position, boardID })
+// milage log
+export async function logMiles(startMiles: number, endMiles: number, fromLocation: '', toLocation: ''): Promise<void> {
+  return window.electron.ipcRenderer.invoke('mileage:log', { startMiles, endMiles, fromLocation, toLocation })
 }
 
-export async function getColumnsByBoard(boardID: number): Promise<Column[]> {
-  return window.electron.ipcRenderer.invoke('column:getByBoard', boardID)
+export async function retrieveAllMiles(): Promise<any[]> {
+  return window.electron.ipcRenderer.invoke('mileage:retrieveAll')
 }
 
-export async function updateColumn(column: Column): Promise<void> {
-  return window.electron.ipcRenderer.invoke('column:update', column)
+export async function deleteMilesById(id: number) {
+  return window.electron.ipcRenderer.invoke('mileage:deleteById', id)
 }
 
-export async function deleteColumn(columnID: number): Promise<void> {
-  return window.electron.ipcRenderer.invoke('column:delete', columnID)
+export async function deleteAllMiles() {
+  return window.electron.ipcRenderer.invoke('mileage:deleteAll')
 }
 
-
-// Cards 
-export async function createCard(title: string, description: string, position: number, columnID: number): Promise<Card> {
-  return window.electron.ipcRenderer.invoke('card:create', { title, description, position, columnID })
-}
-
-export async function getCardsByColumn(columnID: number): Promise<Card[]> {
-  return window.electron.ipcRenderer.invoke('card:getByColumn', columnID)
-}
-
-export async function updateCard(card: Card): Promise<void> {
-  return window.electron.ipcRenderer.invoke('card:update', card)
-}
-
-export async function deleteCard(cardID: number): Promise<void> {
-  return window.electron.ipcRenderer.invoke('card:delete', cardID)
-}
 
 // Accounts
 export async function login(username: string, password: string): Promise<{ response: number, email?: string }> {

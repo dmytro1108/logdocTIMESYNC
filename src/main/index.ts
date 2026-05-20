@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import { registerBoardHandlers, registerColumnHandlers, registerCardHandlers, registerAccountHandlers } from './ipc-handlers'
+import { registerBoardHandlers, registerAccountHandlers, registerMileageHandlers } from './ipc-handlers'
 import { DatabaseConnection } from './database/DatabaseConnection'
 import { AccountConnection } from './database/AccountConnection'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
@@ -56,7 +56,7 @@ app.whenReady().then(() => {
   ipcMain.on('ping', () => console.log('pong'))
 
   // Initialize database and IPC handlers
-  const dbPath = join(app.getPath('userData'), 'kanflow.db')
+  const dbPath = join(app.getPath('userData'), 'toolflow.db')
   const accountsDbPath = join(app.getPath('userData'), 'accounts.db')
 
   const db = DatabaseConnection.getInstance(dbPath)
@@ -75,10 +75,8 @@ app.whenReady().then(() => {
   )
 
   registerBoardHandlers()
-  registerColumnHandlers()
-  registerCardHandlers()
   registerAccountHandlers()
-
+  registerMileageHandlers()
   createWindow()
 
   app.on('activate', function () {

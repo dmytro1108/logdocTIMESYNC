@@ -1,9 +1,10 @@
-export default class Board {
+export default class Dashboard {
     year: number
     totalMiles: number
     totalExpenses: number
     documentCount: number
     upcomingDeadlineCount: number
+    id: number
   
     constructor(year: number) {
       this.year = year
@@ -11,5 +12,6 @@ export default class Board {
       this.totalExpenses = 0
       this.documentCount = 0
       this.upcomingDeadlineCount = 0
+      this.id = 0
     }
   }
