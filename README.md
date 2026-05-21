@@ -1,122 +1,68 @@
-# KanFLOW - Kanban Desktop App
+# T-Tool
 
-A desktop Kanban board application built with Electron, React, and TypeScript.
+T-Tool is a desktop multitool for trucking users who need practical day-to-day tracking without assuming perfect organization habits.
 
-## Features
-- User account management
-- Create and delete boards
-- Add, edit, and delete columns
-- Add, edit, and delete cards
-- Move cards between columns
-- Local SQLite database for data persistence
+This project started as KanFLOW, but it is now focused on trucking-oriented utility workflows (especially quick logging and simple record keeping).
 
-## Technologies
+## What T-Tool is for
 
-### Frontend
-- **Electron** — Desktop application framework
-- **React** — UI component library
-- **TypeScript** — Type-safe JavaScript
-- **Vite** — Build tool and dev server
+- Help drivers log important info fast
+- Keep key records in one local desktop app
+- Reduce chaos for users who are busy, mobile, and not always organized
+- Provide simple tools first, then grow into a broader trucking utility suite
 
-### Database
-- **SQLite3** — Embedded SQL database (via better-sqlite3)
+## Current functionality
 
-## Project Structure
-```
-.
-├──src
-│  ├──main                    # Electron Main Process
-│  │  ├── main.ts             # App entry, creates window
-│  │  ├── database.ts         # SQLite operations
-│  │  ├── ipc-handlers.ts     # Handles IPC messages from renderer
-│  │  └──...
-│  ├──preload                 # Security bridge
-│  │  ├── preload.ts          # Exposes safe APIs to renderer
-│  │  └──...
-│  └──renderer                # with React UI
-│     │──src   
-│     │  ├── App.tsx          # Root component
-│     │  ├── components       # Board, Column, Card components
-│     │  ├── ipc.ts           # Wrapper for calling preload APIs
-│     │  ├── index.html       # HTML entry
-│     │  └──...
-│     │──index.html           # HTML template for Vite
-│     └──...
-├──electron.vite.config.ts    # Vite config for Electron
-├──package.json               # Project metadata and dependencies
-└──...
+Based on the current codebase, T-Tool currently includes:
+
+- **Account flow (local):** sign up and login backed by local SQLite
+- **Mileage tool:**
+  - Log starting and ending miles
+  - Auto-calculate business miles
+  - View mileage history
+  - Delete individual logs or clear all logs
+  - Basic guardrails (invalid numbers, decreasing mileage checks)
+- **Data export:** export dashboard-style data to a JSON file
+- **Local persistence:** SQLite databases created in the app user data directory
+
+## Tech stack
+
+- **Electron** + **React** + **TypeScript**
+- **electron-vite** for development/build workflow
+- **better-sqlite3** for local database storage
+
+## Project structure (high level)
+
+```text
+src/
+  main/        Electron main process, IPC handlers, SQLite repositories
+  preload/     Secure bridge exposing Electron APIs to renderer
+  renderer/    React UI and tool workflows
+  shared/      Shared TypeScript types
 ```
 
-## Architecture
-
-The app uses Electron's multi-process architecture with IPC communication:
-```
-React UI (renderer process)
-        ↓ IPC
-Electron Main Process
-        ↓
-SQLite Database
-        ↑
-Electron Main Process
-        ↑ IPC
-React UI (renderer process)
-```
-
-## GitHub Management
-
-We are working in this repo as a team and will follow a structured workflow for managing our work.
-
-### TLDR
-Each feature will need to be developed and commited on its own branch before we merge it, via pull request, into `main`.
-
-### Branch Protection
-The `main` branch is protected with the following rules:
-- All changes must be made through pull requests
-- Direct pushes to `main` are not allowed (even for admins)
-
-### Workflow
-1. **Create a feature branch** for each task/feature
-```bash
-   git checkout main
-   git pull
-   git checkout -b feature-name
-```
-
-2. **Make your changes** and commit regularly
-```bash
-   git add .
-   git commit -m "Descriptive message"
-```
-
-3. **Push your branch** to GitHub
-```bash
-   git push origin feature-name
-```
-
-4. **Create a pull request**
-```bash
-   gh pr create
-```
-   Or use the GitHub web interface
-
-5. **Code review** - Team members review the PR
-
-6. **Merge** - Once approved, merge the PR into `main`
-
-### Resources
-See `/prof-instructions` for additional guidelines from course materials.
-
-## Getting Started
-
-To run the app
-```bash
-   cd ./CS320-APP
-```
+## Getting started
 
 ```bash
-   npm install
-   npm run dev
+npm install
+npm run dev
 ```
 
+## Useful scripts
 
+```bash
+npm run dev        # run app in development
+npm run lint       # run eslint
+npm run test       # run vitest
+npm run build      # typecheck + production build
+```
 
+## Data storage notes
+
+T-Tool currently uses local SQLite databases in the app's userData folder. See:
+
+- `./SETUP_SQLITE.md`
+
+## Status
+
+T-Tool is in active transition from a Kanban-first concept to a trucking-person multitool. You may still see legacy naming in parts of the code while the product direction is being aligned.
