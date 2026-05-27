@@ -54,3 +54,8 @@ export async function login(username: string, password: string): Promise<{ respo
 export async function signup(username: string, email: string, password: string): Promise<{ response: number }> {
   return window.electron.ipcRenderer.invoke('account:signup', username, email, password)
 }
+
+// path for file (for document drag and drop)
+export async function getPathForFile(file: File): Promise<string> {
+  return (window as any).getPathForFile(file)
+}

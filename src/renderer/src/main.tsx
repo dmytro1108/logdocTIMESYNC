@@ -2,7 +2,11 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import Accounts from './components/Accounts'
 import WebSocketLink from './components/WebSocketLink'
+
+// imports for the tools
 import { Mileage } from './components/Mileage'
+import { Document } from './components/Document'
+
 import Board from './components/Dashboard'
 
 import './assets/main.css';
@@ -214,6 +218,9 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
             <button className="toolImageButton" onClick={() => retrieveAllMiles()}>
               <img src="/icon2.png" alt="show milage history" width={70} height={70} />
             </button>
+            <button className="toolImageButton" onClick={async () => {this.setState({ activeTool: "documents" });}}>
+              <img src="/icon3.png" alt="Upload document" width={70} height={70} />
+            </button>
             
           </div>
           
@@ -222,11 +229,15 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
         <div className="leftSide">
           
           <text style = {{ fontSize: BUTTON_FONT_SIZE}}>&gt;&gt;{this.state.debugMsg} </text>
-
+          {/** milage tool for tracking miles */}
           <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>
             {this.state.activeTool === "mileage" ? (<Mileage onClose={() => this.setState({ activeTool: null })} />) : null}          
           </div>
 
+          {/** dragndrop documents box */}
+          <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>
+            {this.state.activeTool === "documents" ? (<Document onClose={() => this.setState({ activeTool: null })} />) : null}          
+          </div>
           <div style={{display: "flex"}}>
 
           </div>
