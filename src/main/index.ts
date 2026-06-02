@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import { registerBoardHandlers, registerAccountHandlers, registerMileageHandlers } from './ipc-handlers'
+import { registerBoardHandlers, registerAccountHandlers, registerMileageHandlers} from './ipc-handlers'
 import { DatabaseConnection } from './database/DatabaseConnection'
 import { AccountConnection } from './database/AccountConnection'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'

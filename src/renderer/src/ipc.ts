@@ -1,4 +1,4 @@
-import { Dashboard} from '../../shared/types' 
+import { Dashboard} from '../../shared/types'
 
 // IPC wrapper functions for database operations
 // Use these instead of calling ipcRenderer.invoke...
@@ -58,4 +58,14 @@ export async function signup(username: string, email: string, password: string):
 // path for file (for document drag and drop)
 export async function getPathForFile(file: File): Promise<string> {
   return (window as any).getPathForFile(file)
+}
+
+//OCR
+export async function performOCR(filePath: string): Promise<string> {
+  return window.electron.ipcRenderer.invoke('document:OCR', filePath)
+}
+
+// Receipt tool
+export async function runReceiptTool(filePath: string): Promise<string> {
+  return window.electron.ipcRenderer.invoke('document:receiptTool', filePath)
 }

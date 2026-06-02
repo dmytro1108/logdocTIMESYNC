@@ -88,69 +88,46 @@ export class Mileage extends React.Component<MileageProps, MilageState> {
 
     render() {
         const mileageWindow = (
-              <div>
-                <div className="mileageToolHeader">
-                  <button onClick={this.props.onClose}>❌</button>
-                  <h2>track miles tool</h2>
+              <div className="mileagePanel">
+                <div className="toolTopBar">
+                  <div>
+                    <p className="eyebrow">Mileage Tracker</p>
+                    <h2>Track miles</h2>
+                    <p className="toolSubtitle">Enter start and end miles. The total is calculated for you.</p>
+                  </div>
+                  <button className="iconCloseButton" onClick={this.props.onClose}>×</button>
                 </div>
-            
-                <div className="mileageRow">
-                  <div className="mileageInputSide">
-                    
+
+                <div className="mileageHeroCard">
+                  <div className="mileageStat">
+                    <span className="statLabel">Business Miles</span>
+                    <strong>{(+this.state.endingMiles || 0) - (+this.state.startingMiles || 0)}</strong>
+                  </div>
+                  <div className="mileageStat">
+                    <span className="statLabel">Last End</span>
+                    <strong>{this.state.lastEndMiles !== null ? this.state.lastEndMiles : "—"}</strong>
+                  </div>
+                  <div className="mileageStat">
+                    <span className="statLabel">Date</span>
+                    <strong>Today</strong>
+                  </div>
+                </div>
+
+                <div className="mileageInputGrid">
+                  <label className="mileageFieldCard">
+                    <span>Starting miles</span>
                     <input className="mileageInput" placeholder={this.state.lastEndMiles !== null ? String(this.state.lastEndMiles) : "0"} value={this.state.startingMiles} onChange={(e) => this.setState({ startingMiles: e.target.value })}/>
-                  
-                  </div>
-                  <div className="arrowNote">
-                    <span className="drawArrow">⬅</span>
-                    <p style={{ fontSize: COLUMN_FONT_SIZE }}>starting miles here</p>
-                  </div>
+                  </label>
+
+                  <label className="mileageFieldCard">
+                    <span>Ending miles</span>
+                    <input className="mileageInput" placeholder="0" value={this.state.endingMiles} onChange={(e) => {this.setState({ endingMiles: e.target.value })}}/>
+                  </label>
                 </div>
-            
-                <div className="mileageRow">
-                  <div className="mileageInputSide">
-                    <input className="mileageInput" placeholder="" value={this.state.endingMiles} onChange={(e) => {this.setState({ endingMiles: e.target.value })}}/>
-                  </div>
-            
-                  <div className="arrowNote">
-                    <span className="drawArrow">⬅</span>
-                    <p style={{ fontSize: COLUMN_FONT_SIZE }}>ending miles here</p>
-                  </div>
-                </div>
-            
-                <div className="mileageRow">
-                  <div className="businessMilesCard">
-                    <label style={{ fontSize: COLUMN_FONT_SIZE }}>Business Miles</label>
-                    <div>
-                      {(+this.state.endingMiles || 0) - (+this.state.startingMiles || 0)}
-                    </div>
-                  </div>
-            
-                  <div className="arrowNote">
-                    <span className="drawArrow">⬅</span>
-                    <p style={{ fontSize: COLUMN_FONT_SIZE }}>your total<br />business miles</p>
-                  </div>
-                </div>
-            
-                <div className="mileageRow saveRow">
-                <button className="saveMileageButton" onClick={async () => { await this.safeLog()}}>
-                  💾 save log
-                </button>
-            
-                  <div className="arrowNote whiteArrow">
-                    <span className="drawArrow">⬅</span>
-                    <p style={{ fontSize: COLUMN_FONT_SIZE }}>save your<br />mileage log</p>
-                  </div>
-                </div>
-            
-                <div className="timeHintRow">
-                  <p className="timeHint">
-                    🕒 date included 😃
-                  </p>
-            
-                  <div className="arrowNote whiteArrow">
-                    <span className="drawArrow">⬅</span>
-                    <p>we’ll add today’s<br />date & time</p>
-                  </div>
+
+                <div className="toolActionRow">
+                  <button className="primaryActionButton" onClick={async () => { await this.safeLog()}}>save log</button>
+                  <span className="miniStatus">{this.state.debugMsg || "date included automatically"}</span>
                 </div>
               </div>
             )
@@ -160,20 +137,13 @@ export class Mileage extends React.Component<MileageProps, MilageState> {
             
                 <div className="historyButtons">
                   <button
-                    onClick={async () => {const logs = await retrieveAllMiles()
-                      this.setState({ mileageLogs: logs })
-                    }}
-                  >
+                    onClick={async () => {const logs = await retrieveAllMiles(); this.setState({ mileageLogs: logs })}}>
                     refresh logs
                   </button>
             
                   <button
                     className="dangerButton"
-                    onClick={async () => {
-                      await deleteAllMiles()
-                      this.setState({ mileageLogs: [], debugMsg: "all mileage logs deleted" })
-                    }}
-                  >
+                    onClick={async () => {await deleteAllMiles(); this.setState({ mileageLogs: [], debugMsg: "all mileage logs deleted" })}}>
                     delete all history
                   </button>
                 </div>
@@ -190,12 +160,7 @@ export class Mileage extends React.Component<MileageProps, MilageState> {
             
                       <button
                         className="smallDangerButton"
-                        onClick={async () => {
-                          await deleteMilesById(log.id)
-                          const logs = await retrieveAllMiles()
-                          this.setState({ mileageLogs: logs })
-                        }}
-                      >
+                        onClick={async () => {await deleteMilesById(log.id); const logs = await retrieveAllMiles(); this.setState({ mileageLogs: logs })}}>
                         delete
                       </button>
                     </div>
@@ -204,7 +169,7 @@ export class Mileage extends React.Component<MileageProps, MilageState> {
               </div>
             )
         return (
-            <div>
+            <div className="toolInner">
                 {mileageWindow}
                 {mileageHistoryDashboard}
             </div>

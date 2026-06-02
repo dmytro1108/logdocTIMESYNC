@@ -28,6 +28,7 @@
     "electron-squirrel-startup": "^1.0.1",
     "electron-updater": "^6.3.9",
     "install": "^0.13.0",
+    "tesseract.js": "^7.0.0",
     "websocket": "^1.0.35",
     "ws": "^8.20.0"
   },

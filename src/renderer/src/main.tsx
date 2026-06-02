@@ -11,7 +11,7 @@ import Board from './components/Dashboard'
 
 import './assets/main.css';
 import { createBoard, getBoardByID, getBoardsByUser, updateBoard, deleteBoard } from './ipc'
-import { exportToFile, logMiles, retrieveAllMiles, deleteAllMiles, deleteMilesById } from './ipc' 
+import { retrieveAllMiles} from './ipc' 
 
 //Constants for easier style prototyping
 const COLUMN_TEXT_COLOR: string = "black";
@@ -193,56 +193,95 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     
     return (
       <div className="mainview">
-        <div className="rightSide">
-
-          <div>
-            <div style = {{ fontSize: "150%", fontWeight: 300, color: COLUMN_TEXT_COLOR}}>
+        <aside className="leftSidebar">
+          <div className="sidebarHeader">
+            <div className="welcomeText">
               Welcome {this.state.successMsg}
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 10 }}>
-            <button style={{ fontSize: BUTTON_FONT_SIZE }} onClick={() => {this.login()}}>login</button>
-            <button style={{ fontSize: BUTTON_FONT_SIZE }} onClick={() => {this.signUp()}}>sign up</button>
-            <button style={{ fontSize: BUTTON_FONT_SIZE }} onClick={() => {this.export()}}>export</button>
+          <div className="accountActions">
+            <button onClick={() => {this.login()}}>login</button>
+            <button onClick={() => {this.signUp()}}>sign up</button>
+            <button onClick={() => {this.export()}}>export</button>
           </div>
-         
-          <div className ="cardBlock" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+
+          <div className="cardBlock">
             {this.state.logInState == "login" ? loginWindow : (this.state.logInState == "signUp" ? signUpWindow : (this.state.logInState == "loggedIn" ? loggedInWindow : null)) }
           </div>
 
-          <div className="tabsView">
-            <button className="toolImageButton" onClick={async () => {this.setState({ activeTool: "mileage" });}}>
-              <img src="/icon.png" alt="Mileage Tracker" width={70} height={70} />
-            </button>
-            <button className="toolImageButton" onClick={() => retrieveAllMiles()}>
-              <img src="/icon2.png" alt="show milage history" width={70} height={70} />
-            </button>
-            <button className="toolImageButton" onClick={async () => {this.setState({ activeTool: "documents" });}}>
-              <img src="/icon3.png" alt="Upload document" width={70} height={70} />
-            </button>
-            
+          <div className="sidebarStatus">
+            <div className="statusLabel">Status</div>
+            <div className="statusMessage">&gt;&gt; {this.state.debugMsg || "ready"}</div>
           </div>
-          
-        </div>
-        
-        <div className="leftSide">
-          
-          <text style = {{ fontSize: BUTTON_FONT_SIZE}}>&gt;&gt;{this.state.debugMsg} </text>
-          {/** milage tool for tracking miles */}
-          <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>
-            {this.state.activeTool === "mileage" ? (<Mileage onClose={() => this.setState({ activeTool: null })} />) : null}          
-          </div>
+        </aside>
 
-          {/** dragndrop documents box */}
-          <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>
-            {this.state.activeTool === "documents" ? (<Document onClose={() => this.setState({ activeTool: null })} />) : null}          
-          </div>
-          <div style={{display: "flex"}}>
+        <main className="mainPanel">
+          <section className="workspaceFrame">
+            <header className="workspaceHeader">
+              <div>
+                <p className="eyebrow">Kan-App Workspace</p>
+                <h1>{this.state.activeTool ? "Tool View" : "Dashboard"}</h1>
+              </div>
+              {this.state.activeTool ? (
+                <button className="closeToolButton" onClick={() => this.setState({ activeTool: null, debugMsg: "tool closed" })}>close tool</button>
+              ) : null}
+            </header>
 
-          </div>
-        </div>
+            <div className="workspaceBody">
+              {this.state.activeTool === null ? (
+                <div className="dashboardGrid">
+                  <div className="dashboardHero">
+                    <p className="eyebrow">No tool selected</p>
+                    <h2>Pick a tool from the dock.</h2>
+                    <p>Your tools stay contained here, so long OCR results and logs scroll inside this workspace instead of breaking the sidebars.</p>
+                  </div>
 
+                  <div className="dashboardCard">
+                    <span className="dashboardMetric">2026</span>
+                    <p>Export Year</p>
+                  </div>
+
+                  <div className="dashboardCard">
+                    <span className="dashboardMetric">{this.state.board.totalMiles}</span>
+                    <p>Total Miles</p>
+                  </div>
+
+                  <div className="dashboardCard">
+                    <span className="dashboardMetric">{this.state.board.documentCount}</span>
+                    <p>Documents</p>
+                  </div>
+                </div>
+              ) : null}
+
+              {this.state.activeTool === "mileage" ? (
+                <div className="toolShell">
+                  <Mileage onClose={() => this.setState({ activeTool: null, debugMsg: "mileage tool closed" })} />
+                </div>
+              ) : null}
+
+              {this.state.activeTool === "documents" ? (
+                <div className="toolShell">
+                  <Document onClose={() => this.setState({ activeTool: null , debugMsg: "doc tool closed"})} />
+                </div>
+              ) : null}
+            </div>
+          </section>
+        </main>
+
+        <aside className="rightDock">
+          <button className="dockButton" title="Mileage Tracker" onClick={async () => {this.setState({ activeTool: "mileage", debugMsg: "mileage tool opened" });}}>
+            <img src="/icon.png" alt="Mileage Tracker" />
+          </button>
+
+          <button className="dockButton" title="Show Mileage History" onClick={async () => {const logs = await retrieveAllMiles(); this.setState({ debugMsg: `loaded ${logs.length} mileage logs` })}}>
+            <img src="/icon2.png" alt="show mileage history" />
+          </button>
+
+          <button className="dockButton" title="Upload Document" onClick={async () => {this.setState({ activeTool: "documents", debugMsg: "documents tool opened" });}}>
+            <img src="/icon3.png" alt="Upload document" />
+          </button>
+        </aside>
       </div>
     )
   }

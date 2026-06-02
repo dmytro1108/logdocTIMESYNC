@@ -2,6 +2,7 @@ import { ipcMain, dialog, BrowserWindow} from 'electron';
 import { BoardRepository } from './database/BoardRepo';
 import { exportToJSON } from './database/Export';
 import { Dashboard} from '../shared/types';
+import { execFile } from 'child_process'
 import fs from 'fs'
 import { error } from 'console';
 
@@ -153,6 +154,7 @@ export function registerAccountHandlers() {
 
 // Handlers for mileage logging tool
 import { MileageLogRepo } from './database/Tools'
+import path from 'path';
 
 export function registerMileageHandlers() {
     // save mileage log
@@ -185,3 +187,41 @@ export function registerMileageHandlers() {
         return mileageRepo.deleteAllMiles()
     })
 }
+
+// execute OCR command on file and return text
+// provided a file path run tesseract <filpath> outputbase -l eng --psm 3
+ipcMain.handle('document:OCR', async(_event, filePath: string) => {
+    return new Promise<string>((resolve, reject) => {
+        execFile('tesseract', [filePath, 'stdout', '-l', 'eng', '--psm', '3'], (error, stdout, stderr) => {
+            if (error) {
+                reject(stderr || error.message)
+                return
+            }
+
+            resolve(stdout)
+        })
+    })
+})
+
+ipcMain.handle("document:receiptTool", async (_event, filePath: string) => {
+    const projectRoot = process.cwd()
+    const scriptPath = path.join(projectRoot, "receiptTool", "receiptTool.py")
+    const outDir = path.join(projectRoot, "receiptTool", "detections")
+    const dumpDir = path.join(outDir, "llm_receipt_dump.txt")
+
+    return new Promise<string>((resolve, reject) => {
+        execFile("python3", [scriptPath, filePath, "--out", outDir, "--passes", "1,2,3"], (error, stdout, stderr) => {
+            if (error) {
+                reject(stderr || error.message)
+                return
+            }
+
+            if (fs.existsSync(dumpDir)) {
+                resolve(stdout)
+                return
+            }
+
+            resolve(stdout)
+        })
+    })
+})

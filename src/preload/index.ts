@@ -9,13 +9,13 @@ const api = {}
 if (process.contextIsolated) {
   contextBridge.exposeInMainWorld('getPathForFile', (file: File) => {
     return webUtils.getPathForFile(file)
-    })
-  } else {
-    // @ts-ignore (define in dts)
-    window.getPathForFile = (file: File) => {
-      return webUtils.getPathForFile(file)
-    }
+  })
+} else {
+  // @ts-ignore (define in dts)
+  window.getPathForFile = (file: File) => {
+    return webUtils.getPathForFile(file)
   }
+}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
