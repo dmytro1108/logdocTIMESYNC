@@ -1,4 +1,4 @@
-# ToolFlow (legacy name: Kanflow)
+# ToolFlow (legacy name: KanFLOW)
 
 ToolFlow is an Electron desktop prototype for **local driver workflow utilities**, not a full Kanban product.
 
