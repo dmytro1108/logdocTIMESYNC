@@ -1,68 +1,101 @@
-# T-Tool
+# ToolFlow (legacy name: KanFLOW)
 
-T-Tool is a desktop multitool for trucking users who need practical day-to-day tracking without assuming perfect organization habits.
+ToolFlow is an Electron desktop prototype for **local driver workflow utilities**, not a full Kanban product.
 
-This project started as KanFLOW, but it is now focused on trucking-oriented utility workflows (especially quick logging and simple record keeping).
+Today, the app is centered on:
+- local account sign-up/login
+- mileage logging and history
+- receipt/image OCR workflows
+- simple JSON export from the dashboard view
 
-## What T-Tool is for
+You will still see older Kanban-oriented naming in parts of the codebase (`kanflow-temp`, `Kan-App Workspace`, old docs/classes), but the current user-facing direction is utility tools.
 
-- Help drivers log important info fast
-- Keep key records in one local desktop app
-- Reduce chaos for users who are busy, mobile, and not always organized
-- Provide simple tools first, then grow into a broader trucking utility suite
+## What the app currently does
 
-## Current functionality
+### 1) Local account flow
+- Sign up and log in through IPC handlers in the Electron main process
+- User records stored in local SQLite (`accounts.db`)
+- Demo account seeded on startup (`demo` / `demo`)
 
-Based on the current codebase, T-Tool currently includes:
+### 2) Mileage tracker
+- Log start and end odometer values
+- Auto-calculate total miles
+- Enforce basic validation:
+  - numbers must be valid
+  - end miles cannot be less than start miles
+  - new start miles cannot be less than last logged end miles
+- View mileage history
+- Delete one log or clear all logs
 
-- **Account flow (local):** sign up and login backed by local SQLite
-- **Mileage tool:**
-  - Log starting and ending miles
-  - Auto-calculate business miles
-  - View mileage history
-  - Delete individual logs or clear all logs
-  - Basic guardrails (invalid numbers, decreasing mileage checks)
-- **Data export:** export dashboard-style data to a JSON file
-- **Local persistence:** SQLite databases created in the app user data directory
+### 3) Document OCR tool
+- Drag-and-drop receipt/image files (`.png`, `.jpg`, `.jpeg`)
+- Runs two OCR paths:
+  - Tesseract CLI (`document:OCR`)
+  - Python receipt pipeline (`document:receiptTool`) under `receiptTool/`
+- Displays OCR output in-app
 
-## Tech stack
+### 4) Export
+- Exports dashboard-style JSON via save dialog (`board:exportJsonToFile`)
 
-- **Electron** + **React** + **TypeScript**
-- **electron-vite** for development/build workflow
-- **better-sqlite3** for local database storage
-
-## Project structure (high level)
+## Architecture
 
 ```text
 src/
-  main/        Electron main process, IPC handlers, SQLite repositories
-  preload/     Secure bridge exposing Electron APIs to renderer
-  renderer/    React UI and tool workflows
-  shared/      Shared TypeScript types
+  main/
+    index.ts                 Electron app lifecycle + DB initialization
+    ipc-handlers.ts          IPC routes for accounts, mileage, OCR, export
+    database/                SQLite connection + repositories
+  preload/
+    index.ts                 Safe API bridge to renderer
+  renderer/src/
+    main.tsx                 Main React UI and tool shell
+    ipc.ts                   Renderer IPC wrappers
+    components/              Accounts, Mileage, Document, etc.
+  shared/
+    types.ts                 Shared TypeScript interfaces
 ```
 
-## Getting started
+## Local data and files
+
+- `toolflow.db`: mileage logs and board-related tables
+- `accounts.db`: local user records
+- Both are created in Electron `userData`
+- Receipt tool artifacts are written under `receiptTool/detections/`
+
+See: `SETUP_SQLITE.md`
+
+## Requirements
+
+Base app:
+- Node.js + npm
+
+For OCR features:
+- `tesseract` available on system PATH
+- Python 3 environment with the receipt tool dependencies (`cv2`, `numpy`, `Pillow`, `transformers`, `torch`, `tqdm`)
+
+If OCR dependencies are missing, account and mileage features can still run.
+
+## Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Useful scripts
+## Scripts
 
 ```bash
-npm run dev        # run app in development
-npm run lint       # run eslint
-npm run test       # run vitest
-npm run build      # typecheck + production build
+npm run dev
+npm run lint
+npm run test
+npm run build
 ```
 
-## Data storage notes
+## Current state (important)
 
-T-Tool currently uses local SQLite databases in the app's userData folder. See:
+This repository is a **work-in-progress hybrid**:
+- the shipped UI is tool-centric (accounts + mileage + OCR)
+- legacy Kanban naming and partially migrated modules are still present
+- some board/database paths are not fully aligned yet
 
-- `./SETUP_SQLITE.md`
-
-## Status
-
-T-Tool is in active transition from a Kanban-first concept to a trucking-person multitool. You may still see legacy naming in parts of the code while the product direction is being aligned.
+Use this repo as a local desktop prototype focused on utility workflows, with ongoing cleanup of legacy structure.
