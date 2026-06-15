@@ -205,23 +205,26 @@ ipcMain.handle('document:OCR', async(_event, filePath: string) => {
 
 ipcMain.handle("document:receiptTool", async (_event, filePath: string) => {
     const projectRoot = process.cwd()
-    const scriptPath = path.join(projectRoot, "receiptTool", "receiptTool.py")
+    const scriptPath = path.join(projectRoot, "receiptTool", "steadyProcessing.py")
     const outDir = path.join(projectRoot, "receiptTool", "detections")
     const dumpDir = path.join(outDir, "llm_receipt_dump.txt")
 
     return new Promise<string>((resolve, reject) => {
-        execFile("python3", [scriptPath, filePath, "--out", outDir, "--passes", "1,2,3"], (error, stdout, stderr) => {
+
+        const pythonPath = "/opt/anaconda3/envs/receipt_processing/bin/python"
+
+        execFile(pythonPath, [scriptPath, filePath, "--out", outDir], (error, stdout, stderr) => {
             if (error) {
                 reject(stderr || error.message)
                 return
             }
 
             if (fs.existsSync(dumpDir)) {
-                resolve(stdout)
+                resolve(fs.readFileSync(dumpDir, "utf8")) // resolve(stdout) if you want the raw output from the script instead of the contents of the dump file
                 return
             }
 
-            resolve(stdout)
+            resolve("")
         })
     })
 })

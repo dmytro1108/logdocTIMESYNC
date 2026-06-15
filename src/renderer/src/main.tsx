@@ -220,21 +220,15 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
           <section className="workspaceFrame">
             <header className="workspaceHeader">
               <div>
-                <p className="eyebrow">Kan-App Workspace</p>
                 <h1>{this.state.activeTool ? "Tool View" : "Dashboard"}</h1>
               </div>
-              {this.state.activeTool ? (
-                <button className="closeToolButton" onClick={() => this.setState({ activeTool: null, debugMsg: "tool closed" })}>close tool</button>
-              ) : null}
             </header>
 
             <div className="workspaceBody">
               {this.state.activeTool === null ? (
                 <div className="dashboardGrid">
                   <div className="dashboardHero">
-                    <p className="eyebrow">No tool selected</p>
-                    <h2>Pick a tool from the dock.</h2>
-                    <p>Your tools stay contained here, so long OCR results and logs scroll inside this workspace instead of breaking the sidebars.</p>
+                    <p className="eyebrow"></p>
                   </div>
 
                   <div className="dashboardCard">

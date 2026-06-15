@@ -1,0 +1,99 @@
+.simpleAutofillPopupBackground {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.74);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 18px;
+}
+
+.simpleAutofillPopupWindow {
+    width: 780px;
+    max-width: 94%;
+    max-height: 88vh;
+    overflow: auto;
+    color: white;
+    padding: 24px;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+}
+
+.simpleAutofillPopupHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.simpleAutofillPopupWindow h2 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.simpleAutofillPopupWindow p {
+    margin-top: 0;
+    margin-bottom: 0;
+    color: #d8d8d8;
+}
+
+.simpleAutofillPopupRows {
+    display: flex;
+    gap: 16px;
+}
+
+.simpleAutofillPopupSection {
+    flex: 1;
+    padding: 14px;
+}
+
+.simpleAutofillPopupSection h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.simpleAutofillPopupSection label {
+    display: block;
+    margin-bottom: 4px;
+    color: white;
+    font-size: 13px;
+}
+
+.simpleAutofillPopupSection input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px;
+    margin-bottom: 10px;
+    border: 2px solid white;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.06);
+    color: white;
+}
+
+.simpleAutofillPopupButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.simpleAutofillPopupButtons button {
+    min-height: 44px;
+    min-width: 110px;
+    padding: 0 14px;
+    border: 2px solid white;
+    border-radius: 8px;
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+}
+
+@media (max-width: 700px) {
+    .simpleAutofillPopupRows {
+        flex-direction: column;
+    }
+}
