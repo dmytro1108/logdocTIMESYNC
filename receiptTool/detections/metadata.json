@@ -1,0 +1,119 @@
+{
+  "autofill": {
+    "documentType": "",
+    "sourceStreet": "725 E 221st St",
+    "sourceCity": "Bronx",
+    "sourceState": "NY",
+    "sourceZip": "10467",
+    "destinationStreet": "555 3rd Ave, Apt 309",
+    "destinationCity": "Brooklyn",
+    "destinationState": "NY",
+    "destinationZip": "11215",
+    "candidateLocations": [
+      {
+        "name": "",
+        "street": "725 E 221st St",
+        "city": "Bronx",
+        "state": "NY",
+        "zip": "10467",
+        "role": "source",
+        "confidence": "high",
+        "evidence": [
+          "tesseract line: 725 E 221st St 555 3rd Ave, Apt 309",
+          "tesseract line: Bronx, NY 10467 Brooklyn, NY 11215"
+        ]
+      },
+      {
+        "name": "",
+        "street": "555 3rd Ave, Apt 309",
+        "city": "Brooklyn",
+        "state": "NY",
+        "zip": "11215",
+        "role": "destination",
+        "confidence": "high",
+        "evidence": [
+          "tesseract line: 725 E 221st St 555 3rd Ave, Apt 309",
+          "tesseract line: Bronx, NY 10467 Brooklyn, NY 11215"
+        ]
+      }
+    ],
+    "needsReview": true,
+    "reviewReason": "Location candidates found. Review before mileage calculation."
+  },
+  "metadata": {
+    "tesseract_records": {
+      "raw_text": "NOTE: This form must be completed for each person in a family. A family of 3 will fill out PAGE 1\n3 forms. You must make 2 copies for each family member to send to ICE and your old court. For a family of 3 you will\n\nhave six copies to mail total; 3 to Ice and 3 to your old court.\nU.S. Department of Justice Change of Address/Contact Information Form\n\nExecutive Office for Immigration Review Immigration Court\n\nInstructions: To complete this form, fill out all blanks below, including proof of service, which certifies that you will provide a copy of this form to the\nDepartment of Homeland Security (DHS). After filling in the blanks and signing both the declaration and proof of service, you must submit the form\nelectronically, in person, or by mail. If submitting electronically, file in Respondent Portal at https://respondentaccess.eoir.justice.gov. Attorneys and fully\naccredited representatives submitting this form electronically must file in Case Portal at https://portal.eoir.justice.gov. If submitting by mail, follow the\nmailing instructions on Page 2. You must submit a separate copy of this form for each individual who has a case pending in immigration court and whom the\nchange of information affects.\n\nYou must file this form with the immigration court within five working days of the change to your contact information, or your receipt of a charging document (e.g., a\nNotice to Appear) with incorrect contact information. The immigration court will send all official correspondence (e.g., notices, decisions) to the address you provide.\nThe immigration court will only make any change(s) to your contact information in EOIR\u2019s records upon receipt of this form; the immigration court will not change\nyour contact information based on different information on pleadings, motions, or other communications with the court.\n\nIf you fail to appear at any hearing before an immigration judge when notice of that hearing or other official correspondence was served on you or sent to the address\nyou provided, DHS may take you into custody. In addition, the immigration court may conduct your hearing in your absence and enter an order of removal, deportation,\nor exclusion against you. If the court enters such an order, you may be ineligible for certain forms of relief from removal under the Immigration and Nationality Act as\nfollows:\ne If you are in removal proceedings: You will be subject to an order of removal for a period of ten years after the date of entry of the final order. You may also\nbecome ineligible for voluntary departure, cancellation of removal, and adjustment of status or change of status.\ne If you are in deportation proceedings: You will be subject to an order of deportation for a period of five years after the date of the entry of the final order.\nYou may also become ineligible for voluntary departure, suspension of deportation or voluntary departure, and adjustment of status or change of status.\ne If you are in exclusion proceedings: Your application for admission to the United States may be considered withdrawn.\n\nName - Last, First, Middle, Suffix (if applicable): A-Number:\nJane E. Doe mE Your A-Number Here\nMy FORMER address and phone number were: My CURRENT address and phone number are:\nThis is the address you gave to immigration when you arrived: This is your new address:\n\u201cin care of\u201d other person (if any) \u201cin care of\u201d other person (if any)\n725 E 221st St 555 3rd Ave, Apt 309\nNumber; Street; Apartment (if any) Number; Street; Apartment (if any)\nBronx, NY 10467 Brooklyn, NY 11215\nCity, State, and ZIP code; Country (if other than U.S.) City, State, and ZIP code; Country (if other than U.S.)\n555 - 338 - 5664 555 - 338 - 5664\nPhone Number (include country code if other than U.S.) Phone Number (include country code if other than U.S.)\njanedoe@gmail.com janedoe@gmail.com\nEmail Address Email Address\n\nI declare under penalty of perjury, pursuant to 28 U.S.C. \u00a7 1746, that I am the person named above associated with the A-Number\nlisted above, and that the information contained in this form is true and correct to the best of my knowledge.\n\nSIGN HERE = x Signature Here (Ifa child is over 14 they must sign themselves) 1/17/2023\n\nSignature Date\n\n",
+      "lines": [
+        "NOTE: This form must be completed for each person in a family. A family of 3 will fill out PAGE 1",
+        "3 forms. You must make 2 copies for each family member to send to ICE and your old court. For a family of 3 you will",
+        "have six copies to mail total; 3 to Ice and 3 to your old court.",
+        "U.S. Department of Justice Change of Address/Contact Information Form",
+        "Executive Office for Immigration Review Immigration Court",
+        "Instructions: To complete this form, fill out all blanks below, including proof of service, which certifies that you will provide a copy of this form to the",
+        "Department of Homeland Security (DHS). After filling in the blanks and signing both the declaration and proof of service, you must submit the form",
+        "electronically, in person, or by mail. If submitting electronically, file in Respondent Portal at https://respondentaccess.eoir.justice.gov. Attorneys and fully",
+        "accredited representatives submitting this form electronically must file in Case Portal at https://portal.eoir.justice.gov. If submitting by mail, follow the",
+        "mailing instructions on Page 2. You must submit a separate copy of this form for each individual who has a case pending in immigration court and whom the",
+        "change of information affects.",
+        "You must file this form with the immigration court within five working days of the change to your contact information, or your receipt of a charging document (e.g., a",
+        "Notice to Appear) with incorrect contact information. The immigration court will send all official correspondence (e.g., notices, decisions) to the address you provide.",
+        "The immigration court will only make any change(s) to your contact information in EOIR\u2019s records upon receipt of this form; the immigration court will not change",
+        "your contact information based on different information on pleadings, motions, or other communications with the court.",
+        "If you fail to appear at any hearing before an immigration judge when notice of that hearing or other official correspondence was served on you or sent to the address",
+        "you provided, DHS may take you into custody. In addition, the immigration court may conduct your hearing in your absence and enter an order of removal, deportation,",
+        "or exclusion against you. If the court enters such an order, you may be ineligible for certain forms of relief from removal under the Immigration and Nationality Act as",
+        "follows:",
+        "e If you are in removal proceedings: You will be subject to an order of removal for a period of ten years after the date of entry of the final order. You may also",
+        "become ineligible for voluntary departure, cancellation of removal, and adjustment of status or change of status.",
+        "e If you are in deportation proceedings: You will be subject to an order of deportation for a period of five years after the date of the entry of the final order.",
+        "You may also become ineligible for voluntary departure, suspension of deportation or voluntary departure, and adjustment of status or change of status.",
+        "e If you are in exclusion proceedings: Your application for admission to the United States may be considered withdrawn.",
+        "Name - Last, First, Middle, Suffix (if applicable): A-Number:",
+        "Jane E. Doe mE Your A-Number Here",
+        "My FORMER address and phone number were: My CURRENT address and phone number are:",
+        "This is the address you gave to immigration when you arrived: This is your new address:",
+        "\u201cin care of\u201d other person (if any) \u201cin care of\u201d other person (if any)",
+        "725 E 221st St 555 3rd Ave, Apt 309",
+        "Number; Street; Apartment (if any) Number; Street; Apartment (if any)",
+        "Bronx, NY 10467 Brooklyn, NY 11215",
+        "City, State, and ZIP code; Country (if other than U.S.) City, State, and ZIP code; Country (if other than U.S.)",
+        "555 - 338 - 5664 555 - 338 - 5664",
+        "Phone Number (include country code if other than U.S.) Phone Number (include country code if other than U.S.)",
+        "janedoe@gmail.com janedoe@gmail.com",
+        "Email Address Email Address",
+        "I declare under penalty of perjury, pursuant to 28 U.S.C. \u00a7 1746, that I am the person named above associated with the A-Number",
+        "listed above, and that the information contained in this form is true and correct to the best of my knowledge.",
+        "SIGN HERE = x Signature Here (Ifa child is over 14 they must sign themselves) 1/17/2023",
+        "Signature Date"
+      ]
+    },
+    "pre_candidates": [
+      {
+        "name": "",
+        "street": "725 E 221st St",
+        "city": "Bronx",
+        "state": "NY",
+        "zip": "10467",
+        "role": "source",
+        "confidence": "high",
+        "evidence": [
+          "tesseract line: 725 E 221st St 555 3rd Ave, Apt 309",
+          "tesseract line: Bronx, NY 10467 Brooklyn, NY 11215"
+        ]
+      },
+      {
+        "name": "",
+        "street": "555 3rd Ave, Apt 309",
+        "city": "Brooklyn",
+        "state": "NY",
+        "zip": "11215",
+        "role": "destination",
+        "confidence": "high",
+        "evidence": [
+          "tesseract line: 725 E 221st St 555 3rd Ave, Apt 309",
+          "tesseract line: Bronx, NY 10467 Brooklyn, NY 11215"
+        ]
+      }
+    ]
+  }
+}

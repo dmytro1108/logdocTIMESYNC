@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import { registerBoardHandlers, registerAccountHandlers, registerMileageHandlers} from './ipc-handlers'
+import { registerBoardHandlers, registerAccountHandlers, registerMileageHandlers, registerThemeHandlers} from './ipc-handlers'
 import { DatabaseConnection } from './database/DatabaseConnection'
 import { AccountConnection } from './database/AccountConnection'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
@@ -9,7 +9,7 @@ import icon from '../../resources/icon.png?asset'
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1400,
+    width: 1200,
     height: 1070,
     maxWidth: 2100,
     maxHeight: 1740,
@@ -79,6 +79,7 @@ app.whenReady().then(() => {
   registerBoardHandlers()
   registerAccountHandlers()
   registerMileageHandlers()
+  registerThemeHandlers()
   createWindow()
 
   app.on('activate', function () {

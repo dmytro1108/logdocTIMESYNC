@@ -1,6 +1,10 @@
 import gl
-from regexProcessing import metaProcessing
+from regexTools import metaProcessing
+"""
 
+The file contains functions for pre-processing an image for TrOCR handwritten text detection
+
+"""
 def preProcessImg(myImg, blr, lnk, dil):
     img = gl.cv2.imread(myImg)
     if img is None:
@@ -184,7 +188,7 @@ def writeRecords(outputDir, records):
 '''
 This function is the main orchestrator.
 '''
-def hDPOne(filePath, outputDir, blr, lnk, dil, minArea, minBox, maxWR, maxHR, maxDensity, boxRejectOne, boxRejectTwo, pName, dbg=False):
+def hDPOne(filePath, outputDir, blr, lnk, dil, minArea, minBox, maxWR, maxHR, maxDensity, boxRejectOne, boxRejectTwo, pName, on, dbg=False):
     outputDir = gl.Path(outputDir)
     outputDir.mkdir(parents=True, exist_ok=True)
 
@@ -204,24 +208,26 @@ def hDPOne(filePath, outputDir, blr, lnk, dil, minArea, minBox, maxWR, maxHR, ma
             data = gl.json.load(f)
             
             reusable.extend(data)
-        metaProcessing(filePath, outputDir, reusable)
+        metaProcessing(filePath, outputDir, reusable, on)
     else:
-        metaProcessing(filePath, outputDir, metadata) # final step
+        metaProcessing(filePath, outputDir, metadata, on) # final step
 
 
 if __name__ == "__main__":
     parser = gl.argparse.ArgumentParser()
     parser.add_argument("filePath")
     parser.add_argument("--out", default="./detections")
+    parser.add_argument("--ai",default = "false")
     args = parser.parse_args()
 
     sample = args.filePath
     baseOut = gl.Path(args.out)
+    aiFlag = args.ai
     baseOut.mkdir(parents=True, exist_ok=True)
     
     passes = []
 
-    passes.append((baseOut / "detected1", (5, 5), (45, 35), (22, 4), 180, (18, 7), 0.70, 0.15, 0.38, (14, 90), (85, 30), "pass_one"))
+    passes.append((baseOut / "detected1", (5, 5), (45, 35), (22, 4), 180, (18, 7), 0.70, 0.15, 0.38, (14, 90), (85, 30), "pass_one", aiFlag))
 
     folders = []
 

@@ -278,15 +278,15 @@ def llmVisionator(outputDir, records, dump):
                 .𖥔 ݁ ˖.𖥔 ݁ ˖🌿⊹₊⋆✶⋆.˚ Running Tesseract OCR tool .𖥔 ݁ ˖.𖥔 ݁ ˖🌿⊹₊⋆✶⋆.˚
 '''
 
-def metaProcessing(myImage, outputDir, records):
+def metaProcessing(myImage, outputDir, records, on):
     outputDir = gl.Path(outputDir)
+    if on:
+        # 1. First LLM pass: choose crop images worth vision review
+        llmPassOne = llmValidator(records)
 
-    # 1. First LLM pass: choose crop images worth vision review
-    # llmPassOne = llmValidator(records)
-
-    # 2. Second pass: weak Moondream hints
-    # llmPassTwo = llmVisionator(outputDir, records, llmPassOne)
-
+        # 2. Second pass: weak Moondream hints
+        llmPassTwo = llmVisionator(outputDir, records, llmPassOne)
+    
     # 3. Whole-document Tesseract OCR
     result = gl.subprocess.run(
         ["tesseract", str(myImage), "stdout", "-l", "eng", "--psm", "3"],
@@ -314,15 +314,26 @@ def metaProcessing(myImage, outputDir, records):
         print(gl.json.dumps(preCandidates, indent=2))
 
     # 6. Build evidence metadata
-    metadata = {
-        "tesseract_records": {
-            "raw_text": rawText,
-            "lines": cleanLines
-        },
-        "ocr_records": records,
-        # "vision_hints": llmPassTwo,
-        "pre_candidates": preCandidates
-    }
+    if on:
+        metadata = {
+            "tesseract_records": {
+                "raw_text": rawText,
+                "lines": cleanLines
+            },
+            "ocr_records": records,
+            "vision_hints": llmPassTwo,
+            "pre_candidates": preCandidates
+        }
+    else:
+        metadata = {
+            "tesseract_records": {
+                "raw_text": rawText,
+                "lines": cleanLines
+            },
+            "ocr_records": records,
+            # "vision_hints": llmPassTwo,
+            "pre_candidates": preCandidates
+        }
 
     # 7. Build autofill only from deterministic address candidates. 
     # LLM/VLM results stay in metadata as weak evidence, but they do not fill fields. 

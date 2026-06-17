@@ -16,17 +16,23 @@ class DatabaseConnection {
     private initializeSchema() {
 
         this.db.prepare(`
+            create table if not exists theme (
+            id integer primary key,
+            name varchar(255),
+            value text
+            )`).run()
+
+        this.db.prepare(`
             
             create table if not exists mileage_log (
-                id integer primary key,
-                dateCreated integer,
-                startMiles integer,
-                endMiles integer,
-                totalMiles integer,
-                fromLocation varchar(255),
-                toLocation varchar(255)
-            )
-        `).run()
+            id integer primary key,
+            dateCreated integer,
+            startMiles integer,
+            endMiles integer,
+            totalMiles integer,
+            fromLocation varchar(255),
+            toLocation varchar(255)
+            )`).run()
 
         this.db.prepare(`
             CREATE TABLE IF NOT EXISTS boards (
@@ -36,8 +42,7 @@ class DatabaseConnection {
             description TEXT,
             userID INTEGER
             /* FOREIGN KEY (userID) REFERENCES users(id) */
-            )
-        `).run()
+            )`).run()
 
     }
 

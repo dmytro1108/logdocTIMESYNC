@@ -1,0 +1,28 @@
+[
+  {
+    "name": "",
+    "street": "725 E 221st St",
+    "city": "Bronx",
+    "state": "NY",
+    "zip": "10467",
+    "role": "source",
+    "confidence": "high",
+    "evidence": [
+      "tesseract line: 725 E 221st St 555 3rd Ave, Apt 309",
+      "tesseract line: Bronx, NY 10467 Brooklyn, NY 11215"
+    ]
+  },
+  {
+    "name": "",
+    "street": "555 3rd Ave, Apt 309",
+    "city": "Brooklyn",
+    "state": "NY",
+    "zip": "11215",
+    "role": "destination",
+    "confidence": "high",
+    "evidence": [
+      "tesseract line: 725 E 221st St 555 3rd Ave, Apt 309",
+      "tesseract line: Bronx, NY 10467 Brooklyn, NY 11215"
+    ]
+  }
+]

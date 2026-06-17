@@ -10,7 +10,7 @@ import { Document } from './components/Document'
 import Board from './components/Dashboard'
 
 import './assets/main.css';
-import { createBoard, getBoardByID, getBoardsByUser, updateBoard, deleteBoard } from './ipc'
+import { createBoard, getBoardByID, getBoardsByUser, updateBoard, deleteBoard, addTheme, changeTheme} from './ipc'
 import { retrieveAllMiles} from './ipc' 
 
 //Constants for easier style prototyping
@@ -32,6 +32,7 @@ type DisplayColProp = { // render board state with columns
   board: Board
   boardList: Board[]
   debugMsg: string
+  logLines: string[]
   logInState: string
   successMsg: string
   username: string
@@ -59,6 +60,7 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
       board: this.board,
       boardList: [],
       debugMsg: '',
+      logLines: ['app shell ready'],
       logInState: '',
       successMsg: '',
       username: '',
@@ -138,6 +140,28 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     })
   }
 
+  themeInit = async () => {
+    await addTheme(0, "dark", "#000000")
+    await addTheme(1, "light", "#FFFFFF")
+  }
+
+  cTheme = async () => {
+    const nextTheme = this.state.theme === "dark" ? "light" : "dark"
+    const nextThemeId = nextTheme === "dark" ? 0 : 1
+
+    try {
+      await changeTheme(nextThemeId, nextTheme, nextTheme === "dark" ? "#000000" : "#FFFFFF")
+      this.setState({
+        theme: nextTheme,
+        debugMsg: `theme changed to ${nextTheme}`
+      })
+    } catch (error) {
+      this.setState({
+        debugMsg: `theme change failed: ${String(error)}`
+      })
+    }
+  }
+
   render() {
 
     const loginWindow = (
@@ -192,37 +216,52 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     
     
     return (
-      <div className="mainview">
+      <div className={`mainview theme-${this.state.theme}`}>
         <aside className="leftSidebar">
           <div className="sidebarHeader">
-            <div className="welcomeText">
-              Welcome {this.state.successMsg}
+            <div>
+              <div className="sidebarKicker">Dev Column</div>
+              <div className="welcomeText">
+                {this.state.successMsg ? `Welcome ${this.state.successMsg}` : "Tax Tool"}
+              </div>
             </div>
+
+            <button className="themeToggleButton" onClick={() => { this.cTheme() }}>
+              {this.state.theme === "dark" ? "light" : "dark"}
+            </button>
           </div>
 
           <div className="accountActions">
-            <button onClick={() => {this.login()}}>login</button>
-            <button onClick={() => {this.signUp()}}>sign up</button>
-            <button onClick={() => {this.export()}}>export</button>
+            <button onClick={() => { this.login() }}>login</button>
+            <button onClick={() => { this.signUp() }}>sign up</button>
+            <button onClick={() => { this.export() }}>export</button>
           </div>
 
           <div className="cardBlock">
-            {this.state.logInState == "login" ? loginWindow : (this.state.logInState == "signUp" ? signUpWindow : (this.state.logInState == "loggedIn" ? loggedInWindow : null)) }
+            {this.state.logInState == "login" ? loginWindow : (this.state.logInState == "signUp" ? signUpWindow : (this.state.logInState == "loggedIn" ? loggedInWindow : null))}
           </div>
 
           <div className="sidebarStatus">
-            <div className="statusLabel">Status</div>
-            <div className="statusMessage">&gt;&gt; {this.state.debugMsg || "ready"}</div>
+            <div className="statusHeader">
+              <div>
+                <div className="statusLabel">Runtime</div>
+                <div className="statusSubLabel">diagnostic feed</div>
+              </div>
+              <span className="statusBadge">{this.state.logLines.length}</span>
+            </div>
+
+            <div className="statusMessage">
+              {this.state.logLines.map((line, index) => (
+                <div className="statusLine" key={`${line}-${index}`}>
+                  <span>&gt;&gt;</span> {line}
+                </div>
+              ))}
+            </div>
           </div>
         </aside>
 
         <main className="mainPanel">
           <section className="workspaceFrame">
-            <header className="workspaceHeader">
-              <div>
-                <h1>{this.state.activeTool ? "Tool View" : "Dashboard"}</h1>
-              </div>
-            </header>
 
             <div className="workspaceBody">
               {this.state.activeTool === null ? (

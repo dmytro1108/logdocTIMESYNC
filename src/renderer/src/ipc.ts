@@ -45,6 +45,14 @@ export async function deleteAllMiles() {
   return window.electron.ipcRenderer.invoke('mileage:deleteAll')
 }
 
+// theme
+export async function addTheme(themeId: number, themeName: string, themeValue: string) {
+  return window.electron.ipcRenderer.invoke('theme:add', themeId, themeName, themeValue)
+}
+
+export async function changeTheme(themeId: number, themeName: string, themeValue: string) {
+  return window.electron.ipcRenderer.invoke('theme:change', themeId, themeName, themeValue)
+}
 
 // Accounts
 export async function login(username: string, password: string): Promise<{ response: number, email?: string }> {
@@ -68,4 +76,9 @@ export async function performOCR(filePath: string): Promise<string> {
 // Receipt tool
 export async function runReceiptTool(filePath: string): Promise<string> {
   return window.electron.ipcRenderer.invoke('document:receiptTool', filePath)
+}
+
+// Compatible file
+export async function compatibleFile(filePath: string): Promise<string> {
+  return window.electron.ipcRenderer.invoke('document:compatibleFile', filePath)
 }

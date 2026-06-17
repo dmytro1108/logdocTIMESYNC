@@ -188,17 +188,41 @@ export function registerMileageHandlers() {
     })
 }
 
+import {ChangeTheme} from './database/Theme'
+export function registerThemeHandlers() {
+    const theme = new ChangeTheme()
+
+    ipcMain.handle('theme:add', async(_event, themeId, themeName, themeValue) => {
+        theme.addTheme(themeId, themeName, themeValue)
+    })
+
+    ipcMain.handle('theme:change', async(_event, themeId, themeName, themeValue) => {
+        theme.changeTheme(themeId, themeName, themeValue)
+    })
+}
+
 // execute OCR command on file and return text
 // provided a file path run tesseract <filpath> outputbase -l eng --psm 3
 ipcMain.handle('document:OCR', async(_event, filePath: string) => {
+    const projectRoot = process.cwd()
+    const outDir = path.join(projectRoot, "receiptTool", "detections")
+    const scriptPath = path.join(projectRoot, "receiptTool", "deterministicProcessing.py")
+    const dumpDir = path.join(outDir, "llm_receipt_dump.txt")
+
     return new Promise<string>((resolve, reject) => {
-        execFile('tesseract', [filePath, 'stdout', '-l', 'eng', '--psm', '3'], (error, stdout, stderr) => {
+        const pythonPath = "/opt/anaconda3/envs/receipt_processing/bin/python"
+
+        execFile(pythonPath, [scriptPath, filePath, '--out', outDir], (error, stdout, stderr) => {
             if (error) {
                 reject(stderr || error.message)
                 return
             }
+            if (fs.existsSync(dumpDir)) {
+                resolve(fs.readFileSync(dumpDir, "utf8"))
+                return
+            }
 
-            resolve(stdout)
+            resolve("")
         })
     })
 })
@@ -213,7 +237,7 @@ ipcMain.handle("document:receiptTool", async (_event, filePath: string) => {
 
         const pythonPath = "/opt/anaconda3/envs/receipt_processing/bin/python"
 
-        execFile(pythonPath, [scriptPath, filePath, "--out", outDir], (error, stdout, stderr) => {
+        execFile(pythonPath, [scriptPath, filePath, "--out", outDir, "--ai", "true"], (error, stdout, stderr) => {
             if (error) {
                 reject(stderr || error.message)
                 return
@@ -225,6 +249,22 @@ ipcMain.handle("document:receiptTool", async (_event, filePath: string) => {
             }
 
             resolve("")
+        })
+    })
+})
+
+ipcMain.handle("document:compatibleFile", async (_event, filePath: string) => {
+    return new Promise<string>((resolve, reject) => {
+        const parsedPath = path.parse(filePath) // build a path as the output
+        const outputPath = path.join(parsedPath.dir, parsedPath.name + "_converted.jpg")
+
+        execFile("ffmpeg", ["-y", "-i", filePath, outputPath], (error, stdout, stderr) => {
+            if (error) {
+                reject(stderr || error.message)
+                return
+            }
+
+            resolve(outputPath)
         })
     })
 })

@@ -12,10 +12,10 @@ import ollama
 import subprocess
 import re
 
-device = "mps" if torch.backends.mps.is_available() else "cpu"
-processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
-model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten").to(device)
-model.eval()
+#device = "mps" if torch.backends.mps.is_available() else "cpu"
+#processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
+#model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten").to(device)
+#model.eval()
 
 DBG = 0
 DBG2 = 0

@@ -9,7 +9,6 @@ export class MileageLogRepo {
     constructor() {
         this.db = DatabaseConnection.getInstance('toolflow.db')
     }
-
     /*
         id integer primary key,
         dateCreated integer,
