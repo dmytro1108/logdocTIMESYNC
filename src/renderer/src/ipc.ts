@@ -54,6 +54,10 @@ export async function changeTheme(themeId: number, themeName: string, themeValue
   return window.electron.ipcRenderer.invoke('theme:change', themeId, themeName, themeValue)
 }
 
+export async function currTheme() {
+  return window.electron.ipcRenderer.invoke('theme:current')
+}
+
 // Accounts
 export async function login(username: string, password: string): Promise<{ response: number, email?: string }> {
   return window.electron.ipcRenderer.invoke('account:login', username, password)

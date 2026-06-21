@@ -3,6 +3,7 @@ import { join } from 'path'
 import { registerBoardHandlers, registerAccountHandlers, registerMileageHandlers, registerThemeHandlers} from './ipc-handlers'
 import { DatabaseConnection } from './database/DatabaseConnection'
 import { AccountConnection } from './database/AccountConnection'
+import { ChangeTheme } from './database/Theme'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 

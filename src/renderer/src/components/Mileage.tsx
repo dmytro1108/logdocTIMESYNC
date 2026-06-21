@@ -85,141 +85,92 @@ export class Mileage extends React.Component<MileageProps, MilageState> {
         this.setState({
             startingMiles: "",
             endingMiles: "",
+            totalMiles: `${end - start}`,
             debugMsg: `logged: ${end - start} miles`
         })
     }
 
     render() {
-      const calculatedMiles = (+this.state.endingMiles || 0) - (+this.state.startingMiles || 0)
 
       const mileageWindow = (
-        <div className="mileagePanel">
-            <div className="mileageTopStrip">
-                <div>
-                    <p className="eyebrow">Mileage</p>
-                    <h2>Quick log</h2>
-                </div>
-
-                <button className="iconCloseButton" onClick={this.props.onClose}>×</button>
+        <div>
+            <div  style = {{"right": "100px", "position": "absolute", "textAlign": "center"}}>
+                <button onClick={this.props.onClose}>×</button>
             </div>
 
-            <div className="mileageQuickCard">
-                <div className="mileageTotalPill">
-                    <span>Total</span>
-                    <strong>{calculatedMiles > 0 ? calculatedMiles : 0}</strong>
+            <div>
+                <div style ={{ "fontSize": "35px","margin": "0", "padding": "10px", "display": "flex"}}>
+                    <span>Total: {this.state.totalMiles}</span>
+                    <strong></strong>
                 </div>
 
-                <div className="mileageInputGrid">
-                    <label className="mileageFieldCard">
+                <div>
+                    <label>
                         <span>Start</span>
-                        <input
-                            className="mileageInput"
-                            placeholder={this.state.lastEndMiles !== null ? String(this.state.lastEndMiles) : "0"}
-                            value={this.state.startingMiles}
-                            onChange={(e) => this.setState({ startingMiles: e.target.value })}
-                        />
+                        <input placeholder={this.state.lastEndMiles !== null ? String(this.state.lastEndMiles) : "0"} value={this.state.startingMiles} onChange={(e) => this.setState({ startingMiles: e.target.value })}/>
                     </label>
 
-                    <label className="mileageFieldCard">
+                    <label>
                         <span>End</span>
-                        <input
-                            className="mileageInput"
-                            placeholder="0"
-                            value={this.state.endingMiles}
-                            onChange={(e) => this.setState({ endingMiles: e.target.value })}
-                            onKeyDown={async (e) => {
-                                if (e.key === "Enter") {
-                                    await this.safeLog()
-                                }
-                            }}
-                        />
+                        <input placeholder="0" value={this.state.endingMiles} onChange={(e) => this.setState({ endingMiles: e.target.value })} onKeyDown={async (e) => {if (e.key === "Enter") {await this.safeLog()}}}/>
                     </label>
                 </div>
 
-                <div className="mileageMetaRow">
-                    <div>
-                        <span>Last end</span>
-                        <strong>{this.state.lastEndMiles !== null ? this.state.lastEndMiles : "—"}</strong>
-                    </div>
-
-                    <div>
-                        <span>Logs</span>
-                        <strong>{this.state.mileageLogs.length}</strong>
-                    </div>
-                </div>
-
-                <div className="toolActionRow mileageActionRow">
-                    <button className="primaryActionButton" onClick={async () => { await this.safeLog() }}>
+                <div> {/* Record mileage */}
+                    <button onClick={async () => { await this.safeLog() }}>
                         save log
                     </button>
-                    <span className="miniStatus">{this.state.debugMsg || "ready"}</span>
                 </div>
             </div>
         </div>
     )
 
     const mileageHistoryDashboard = (
-        <div className="historyDashboard">
-            <div className="historyHeader">
+        <div>
+            <div>
                 <div>
-                    <p className="eyebrow">History</p>
-                    <h2>Recent logs</h2>
-                </div>
-
-                <div className="historyButtons">
-                    <button
-                        onClick={async () => {
-                            const logs = await retrieveAllMiles()
-                            this.setState({ mileageLogs: logs, debugMsg: "mileage logs refreshed" })
-                        }}>
+                    <button onClick={async () => {const logs = await retrieveAllMiles(); this.setState({ mileageLogs: logs, debugMsg: "mileage logs refreshed" })}}>
                         refresh
                     </button>
 
-                    <button
-                        className="dangerButton"
-                        onClick={async () => {
-                            await deleteAllMiles()
-                            this.setState({ mileageLogs: [], lastEndMiles: null, debugMsg: "all mileage logs deleted" })
-                        }}>
+                    <button onClick={async () => {await deleteAllMiles(); this.setState({ mileageLogs: [], lastEndMiles: null, debugMsg: "all mileage logs deleted" })}}>
                         clear
                     </button>
                 </div>
             </div>
 
-            <div className="historyList">
+            <div style = {{ "padding": "10px" }}>
                 {this.state.mileageLogs.length > 0 ? (
                     this.state.mileageLogs.map((log) => (
-                        <div className="historyLogCard" key={log.id}>
-                            <div className="historyLogMain">
+                        <div key={log.id} style = {{ "padding": "10px" }}>
+                            <div>
                                 <strong>{log.totalMiles} mi</strong>
                                 <span>{new Date(log.dateCreated).toLocaleDateString()}</span>
                             </div>
 
-                            <div className="historyLogSub">
+                            <div>
                                 {log.startMiles ?? "?"} → {log.endMiles ?? "?"}
                             </div>
 
-                            <button
-                                className="smallDangerButton"
-                                onClick={async () => {
-                                    await deleteMilesById(log.id)
-                                    const logs = await retrieveAllMiles()
-                                    this.setState({ mileageLogs: logs, debugMsg: "mileage log deleted" })
-                                }}>
+                            {/* delete mileage log */}
+                            <button onClick={async () => {await deleteMilesById(log.id); const logs = await retrieveAllMiles(); this.setState({ mileageLogs: logs, debugMsg: "mileage log deleted" })}}>
                                 delete
                             </button>
                         </div>
                     ))
                 ) : (
-                    <div className="emptyHistoryBox" aria-hidden="true" />
+                    <div/>
                 )}
             </div>
         </div>
     )
 
     return (
-        <div className="toolInner mileageToolInner">
-            {mileageWindow}
+        <div>
+            <div style = {{ "padding": "10px" }}>
+                {mileageWindow}
+            </div>
+            <div style = {{ "height": "10px", "padding": "10px", "borderTop": "2px dashed var(--ink-line)", "margin": "0"}}></div>
             {mileageHistoryDashboard}
         </div>
     )

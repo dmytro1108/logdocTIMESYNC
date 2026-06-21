@@ -281,13 +281,9 @@ def llmVisionator(outputDir, records, dump):
 def metaProcessing(myImage, outputDir, records, on):
     outputDir = gl.Path(outputDir)
     if on:
-        # 1. First LLM pass: choose crop images worth vision review
         llmPassOne = llmValidator(records)
-
-        # 2. Second pass: weak Moondream hints
         llmPassTwo = llmVisionator(outputDir, records, llmPassOne)
     
-    # 3. Whole-document Tesseract OCR
     result = gl.subprocess.run(
         ["tesseract", str(myImage), "stdout", "-l", "eng", "--psm", "3"],
         stdout=gl.subprocess.PIPE,
@@ -295,30 +291,22 @@ def metaProcessing(myImage, outputDir, records, on):
         text=True
     )
 
-    rawText = result.stdout
+    
+    niceT = gl.ln(result.stdout)
 
-    # 4. Clean Tesseract into readable non-empty lines
-    cleanLines = []
-    for line in rawText.splitlines():
-        line = line.strip()
-        if line != "":
-            cleanLines.append(line)
-
-    # 5. Deterministic address candidate extraction
-    preCandidates = extractAddressPairs(cleanLines)
-    preCandidates = assignAddressRoles(cleanLines, preCandidates)
+    # regex processing
+    preCandidates = extractAddressPairs(niceT)
+    preCandidates = assignAddressRoles(niceT, preCandidates)
     ruleBasedAutofill = buildAutofillFromCandidates(preCandidates)
 
     if gl.TMP:
         print("PRE CANDIDATES:")
         print(gl.json.dumps(preCandidates, indent=2))
 
-    # 6. Build evidence metadata
     if on:
         metadata = {
             "tesseract_records": {
-                "raw_text": rawText,
-                "lines": cleanLines
+                "lines": niceT
             },
             "ocr_records": records,
             "vision_hints": llmPassTwo,
@@ -327,43 +315,15 @@ def metaProcessing(myImage, outputDir, records, on):
     else:
         metadata = {
             "tesseract_records": {
-                "raw_text": rawText,
-                "lines": cleanLines
+                "lines": niceT
             },
             "ocr_records": records,
             # "vision_hints": llmPassTwo,
             "pre_candidates": preCandidates
         }
 
-    # 7. Build autofill only from deterministic address candidates. 
-    # LLM/VLM results stay in metadata as weak evidence, but they do not fill fields. 
-    autofill = ruleBasedAutofill 
- 
-    # 8. Keep review true if candidates exist but source/destination is incomplete.
-    if len(autofill.get("candidateLocations", [])) > 0: 
-        sourceEmpty = ( 
-            autofill.get("sourceStreet", "") == "" or 
-            autofill.get("sourceCity", "") == "" or 
-            autofill.get("sourceState", "") == "" or 
-            autofill.get("sourceZip", "") == "" 
-        ) 
- 
-        destinationEmpty = ( 
-            autofill.get("destinationStreet", "") == "" or 
-            autofill.get("destinationCity", "") == "" or 
-            autofill.get("destinationState", "") == "" or 
-            autofill.get("destinationZip", "") == "" 
-        ) 
- 
-        if sourceEmpty or destinationEmpty: 
-            autofill["needsReview"] = True 
- 
-            if autofill.get("reviewReason", "") == "": 
-                autofill["reviewReason"] = "Location candidates found, but source/destination role needs review."
-
-    # 9. Final output for Electron/React
     finalOutput = {
-        "autofill": autofill,
+        # "autofill": autofill,
         "metadata": metadata
     }
 

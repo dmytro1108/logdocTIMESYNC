@@ -6,11 +6,10 @@ import WebSocketLink from './components/WebSocketLink'
 // imports for the tools
 import { Mileage } from './components/Mileage'
 import { Document } from './components/Document'
-
-import Board from './components/Dashboard'
+import { Dashboard} from './components/Dashboard'
 
 import './assets/main.css';
-import { createBoard, getBoardByID, getBoardsByUser, updateBoard, deleteBoard, addTheme, changeTheme} from './ipc'
+import { createBoard, getBoardByID, getBoardsByUser, updateBoard, deleteBoard, addTheme, changeTheme, currTheme} from './ipc'
 import { retrieveAllMiles} from './ipc' 
 
 //Constants for easier style prototyping
@@ -22,15 +21,14 @@ const BUTTON_FONT_SIZE: string = COLUMN_BUTTON_SIZE;
 const USER_ID = 1
 
 type MainViewProps = {
-  board: Board
+  board: Dashboard
   exportYear: number
   activeTool: "mileage" | "documents" | "notifications" | null
   theme: "dark" | "light"
 }
 
 type DisplayColProp = { // render board state with columns
-  board: Board
-  boardList: Board[]
+  board: Dashboard
   debugMsg: string
   logLines: string[]
   logInState: string
@@ -44,7 +42,7 @@ type DisplayColProp = { // render board state with columns
 }
 
 class MainView extends React.Component<MainViewProps, DisplayColProp> {
-  board: Board
+  board: Dashboard
   activeTool: "mileage" | "documents" | "notifications" | null
   theme: "dark" | "light"
   newLink: any
@@ -58,7 +56,6 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
 
     this.state = {
       board: this.board,
-      boardList: [],
       debugMsg: '',
       logLines: ['app shell ready'],
       logInState: '',
@@ -107,7 +104,6 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
   login = () => {
     this.setState({
       board: this.state.board,
-      boardList: this.state.boardList,
       logInState: "login",
       debugMsg: "logging in..."
     })
@@ -116,7 +112,6 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
   signUp = () => {
     this.setState({
       board: this.state.board,
-      boardList: this.state.boardList,
       logInState: "signUp",
       debugMsg: "signing up..."
     })
@@ -140,11 +135,6 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     })
   }
 
-  themeInit = async () => {
-    await addTheme(0, "dark", "#000000")
-    await addTheme(1, "light", "#FFFFFF")
-  }
-
   cTheme = async () => {
     const nextTheme = this.state.theme === "dark" ? "light" : "dark"
     const nextThemeId = nextTheme === "dark" ? 0 : 1
@@ -160,6 +150,13 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
         debugMsg: `theme change failed: ${String(error)}`
       })
     }
+  }
+
+  currTheme = async () => {
+    const theme = await currTheme()
+    this.setState({
+      theme: theme[0].name,
+    })
   }
 
   render() {
@@ -217,102 +214,50 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     
     return (
       <div className={`mainview theme-${this.state.theme}`}>
-        <aside className="leftSidebar">
-          <div className="sidebarHeader">
-            <div>
-              <div className="sidebarKicker">Dev Column</div>
-              <div className="welcomeText">
-                {this.state.successMsg ? `Welcome ${this.state.successMsg}` : "Tax Tool"}
-              </div>
-            </div>
-
-            <button className="themeToggleButton" onClick={() => { this.cTheme() }}>
+        <aside className = "leftSidebar">
+          <div>
+            <div>Welcome</div>
+            <button onClick={() => { this.cTheme() }}>
               {this.state.theme === "dark" ? "light" : "dark"}
             </button>
           </div>
 
-          <div className="accountActions">
+          <div>
             <button onClick={() => { this.login() }}>login</button>
             <button onClick={() => { this.signUp() }}>sign up</button>
             <button onClick={() => { this.export() }}>export</button>
           </div>
 
-          <div className="cardBlock">
+          <div>
             {this.state.logInState == "login" ? loginWindow : (this.state.logInState == "signUp" ? signUpWindow : (this.state.logInState == "loggedIn" ? loggedInWindow : null))}
           </div>
-
-          <div className="sidebarStatus">
-            <div className="statusHeader">
-              <div>
-                <div className="statusLabel">Runtime</div>
-                <div className="statusSubLabel">diagnostic feed</div>
-              </div>
-              <span className="statusBadge">{this.state.logLines.length}</span>
-            </div>
-
-            <div className="statusMessage">
-              {this.state.logLines.map((line, index) => (
-                <div className="statusLine" key={`${line}-${index}`}>
-                  <span>&gt;&gt;</span> {line}
-                </div>
-              ))}
-            </div>
+          <div style = {{ "padding": "10px" }}>
+            {this.state.debugMsg}
           </div>
+
         </aside>
 
         <main className="mainPanel">
-          <section className="workspaceFrame">
-
-            <div className="workspaceBody">
-              {this.state.activeTool === null ? (
-                <div className="dashboardGrid">
-                  <div className="dashboardHero">
-                    <p className="eyebrow"></p>
-                  </div>
-
-                  <div className="dashboardCard">
-                    <span className="dashboardMetric">2026</span>
-                    <p>Export Year</p>
-                  </div>
-
-                  <div className="dashboardCard">
-                    <span className="dashboardMetric">{this.state.board.totalMiles}</span>
-                    <p>Total Miles</p>
-                  </div>
-
-                  <div className="dashboardCard">
-                    <span className="dashboardMetric">{this.state.board.documentCount}</span>
-                    <p>Documents</p>
-                  </div>
-                </div>
-              ) : null}
-
-              {this.state.activeTool === "mileage" ? (
-                <div className="toolShell">
-                  <Mileage onClose={() => this.setState({ activeTool: null, debugMsg: "mileage tool closed" })} />
-                </div>
-              ) : null}
-
-              {this.state.activeTool === "documents" ? (
-                <div className="toolShell">
-                  <Document onClose={() => this.setState({ activeTool: null , debugMsg: "doc tool closed"})} />
-                </div>
-              ) : null}
+          <section>
+            <div>{/* the dashboard view changes between the active tooling  */}
+              {this.state.activeTool === null ? ( <Dashboard year={"1991"} /> ) : null}
+              {this.state.activeTool === "mileage" ? (<Mileage onClose={() => this.setState({ activeTool: null, debugMsg: "mileage tool closed" })} />) : null}
+              {this.state.activeTool === "documents" ? (<Document onClose={() => this.setState({ activeTool: null , debugMsg: "doc tool closed"})} />) : null}
             </div>
           </section>
         </main>
 
-        <aside className="rightDock">
-          <button className="dockButton" title="Mileage Tracker" onClick={async () => {this.setState({ activeTool: "mileage", debugMsg: "mileage tool opened" });}}>
-            <img src="/icon.png" alt="Mileage Tracker" />
+        <aside className = "rightDock">
+          <button title="Mileage Tracker" onClick={async () => {this.setState({ activeTool: "mileage", debugMsg: "mileage tool opened" });}}>
+            <img style={{ width: "44px", height: "44px", objectFit: "contain" }} src="/icon.png" alt="Mileage Tracker"/>
           </button>
 
-          <button className="dockButton" title="Show Mileage History" onClick={async () => {const logs = await retrieveAllMiles(); this.setState({ debugMsg: `loaded ${logs.length} mileage logs` })}}>
-            <img src="/icon2.png" alt="show mileage history" />
+          <button title="Show Mileage History" onClick={async () => {const logs = await retrieveAllMiles(); this.setState({ debugMsg: `loaded ${logs.length} mileage logs` })}}>
+            <img style={{ width: "44px", height: "44px", objectFit: "contain" }} src="/icon2.png"alt="show mileage history"/> 
           </button>
 
-          <button className="dockButton" title="Upload Document" onClick={async () => {this.setState({ activeTool: "documents", debugMsg: "documents tool opened" });}}>
-            <img src="/icon3.png" alt="Upload document" />
+          <button title="Upload Document" onClick={async () => {this.setState({ activeTool: "documents", debugMsg: "documents tool opened" });}}>
+            <img style={{ width: "44px", height: "44px", objectFit: "contain" }} src="/icon3.png" alt="Upload document"/>
           </button>
         </aside>
       </div>
@@ -323,7 +268,7 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <div>
-    <MainView board={new Board(2026)} exportYear={2026} activeTool={null} theme={"light"}/>
+    <MainView board = {new Dashboard("")} />
     </div>
   </React.StrictMode>
 )

@@ -188,7 +188,7 @@ export function registerMileageHandlers() {
     })
 }
 
-import {ChangeTheme} from './database/Theme'
+import { ChangeTheme } from './database/Theme'
 export function registerThemeHandlers() {
     const theme = new ChangeTheme()
 
@@ -198,6 +198,10 @@ export function registerThemeHandlers() {
 
     ipcMain.handle('theme:change', async(_event, themeId, themeName, themeValue) => {
         theme.changeTheme(themeId, themeName, themeValue)
+    })
+
+    ipcMain.handle('theme:current', async(_event) => {
+        return await theme.currTheme()
     })
 }
 

@@ -12,10 +12,10 @@ export class ChangeTheme {
     public addTheme(themeId: number, themeName: string, themeValue: string) {
         this.db.execute(
             `insert into theme 
-            (id, name, value)
-            values (?, ?, ?)
+            (id, name, value, status)
+            values (?, ?, ?, ?)
             `,
-            [themeId, themeName, themeValue]
+            [themeId, themeName, themeValue, 0]
         )
     }
 
@@ -23,6 +23,13 @@ export class ChangeTheme {
         this.db.execute(
             `select * from theme where id = ?`,
             [themeId]
+        )
+    }
+
+    public async currTheme() {
+        // parse the theme table, if the table status is 1, return the theme
+        return await this.db.execute(
+            `select * from theme where status = 1`
         )
     }
 }

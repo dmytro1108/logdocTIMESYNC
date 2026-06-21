@@ -223,20 +223,20 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         }
     }
 
-    render() {
+    render() {  
         const autofillPopup = (
-            <div className="simpleAutofillPopupBackground">
-                <div className="simpleAutofillPopupWindow">
-                    <div className="simpleAutofillPopupHeader">
+            <div>
+                <div>
+                    <div>
                         <div>
-                            <p className="eyebrow">Autofill</p>
+                            <p>Autofill</p>
                             <h2>Confirm locations</h2>
                         </div>
-                        <button className="uploadIcon" onClick={() => this.setState({ showAutofillPopup: false })}>×</button>
+                        <button onClick={() => this.setState({ showAutofillPopup: false })}>×</button>
                     </div>
 
-                    <div className="simpleAutofillPopupRows">
-                        <div className="simpleAutofillPopupSection">
+                    <div>
+                        <div>
                             <h3>Source</h3>
 
                             <label>Street</label>
@@ -252,7 +252,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                             <input type="number" value={this.state.sourceZip} onChange={(e) => this.setState({ sourceZip: Number(e.target.value) || 0 })} />
                         </div>
 
-                        <div className="simpleAutofillPopupSection">
+                        <div>
                             <h3>Destination</h3>
 
                             <label>Street</label>
@@ -269,11 +269,11 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                         </div>
                     </div>
 
-                    <div className="simpleAutofillPopupButtons">
+                    <div>
                         <button onClick={() => this.setState({ showAutofillPopup: false })}>
                             Cancel
                         </button>
-                        <button className="primaryActionButton" onClick={() => this.setState({ showAutofillPopup: false, debugMsg: "autofill confirmed" })}>
+                        <button onClick={() => this.setState({ showAutofillPopup: false, debugMsg: "autofill confirmed" })}>
                             Use Autofill
                         </button>
                     </div>
@@ -281,39 +281,40 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
             </div>
         )
 
-        const dragWindow = (
-            <div className="document-container">
-                <div className="documentTopStrip">
-                    <button className="iconCloseButton" onClick={this.props.onClose}>×</button>
+        const dropWindow = (
+            <div>    
+                <div style = {{"right": "100px", "position": "absolute", "textAlign": "center"}}>
+                    <button onClick={this.props.onClose}>×</button>
                 </div>
 
-                <div
-                    className={this.state.isDragging ? "uploadDropZone isDragging" : "uploadDropZone"}
+                {/* Droppable field for files */}
+                <div className = " myBoxDropOutline"
                     onDragOver={(e) => {
                         e.preventDefault()
                         this.setState({ isDragging: true })
                     }}
                     onDragLeave={() => this.setState({ isDragging: false })}
                     onDrop={this.handleDrop}
-                >
-                    <div className="uploadIcon">⌁</div>
-                    <p className="uploadTitle">Drop receipt</p>
-                    <p className="uploadHint">PNG · JPG · JPEG</p>
-
-                    <div className="documentDebug">
-                        {this.state.filePath ? this.state.filePath : this.state.debugMsg || "waiting for file"}
+                    >
+                    <div>
+                        {this.state.filePath ? this.state.filePath : this.state.debugMsg || "waiting for file..."}
                     </div>
+                    <div>
+                        <div style = {{ "textAlign": "center", "top": "80px", "bottom": "10px", "position": "relative" }}>
+                            📄
+                        </div>
+                    </div>
+                    
                 </div>
 
-                <div className="toolActionRow documentActionRow">
-                    <button className="primaryActionButton" onClick={this.processUpload}>
+                <div style = {{"padding": "10px"}}>
+                    <button onClick={this.processUpload}>
                         Run OCR
                     </button>
-                    <span className="miniStatus">{this.state.debugMsg || "ready"}</span>
                 </div>
 
-                <div className="documentContent">
-                    <div className="resultHeader">
+                <div>
+                    <div>
                         <h3>Result</h3>
                         <span>{this.state.content ? "ready" : "empty"}</span>
                     </div>
@@ -321,15 +322,15 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                     {this.state.content ? (
                         <pre>{this.state.content}</pre>
                     ) : (
-                        <div className="emptyResultBox" aria-hidden="true" />
+                        <div/>
                     )}
                 </div>
             </div>
         )
 
         return (
-            <div className="toolInner">
-                {dragWindow}
+            <div>
+                {dropWindow}
                 {this.state.showAutofillPopup ? autofillPopup : null}
             </div>
         )

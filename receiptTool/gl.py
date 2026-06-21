@@ -21,3 +21,14 @@ DBG = 0
 DBG2 = 0
 LLMDBG = 0
 TMP = 0
+
+'''
+    method that seperates each line, and returns the seperated lines as an array
+'''
+def ln(a):
+    g = []
+    for i in a.splitlines():
+        i = i.strip()
+        if i != "":
+            g.append(i)
+    return g

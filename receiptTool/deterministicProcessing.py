@@ -1,16 +1,6 @@
 import gl
 from regexTools import extractAddressPairs, assignAddressRoles, buildAutofillFromCandidates
 
-'''
-    method that seperates each line, and returns the seperated lines as an array
-'''
-def ln(a):
-    g = []
-    for i in a.splitlines():
-        i = i.strip()
-        if i != "":
-            g.append(i)
-    return g
 
 '''
     method will run tesseract, filter and write the output as metadata
@@ -26,8 +16,7 @@ def tOrchestration(outputDir, myImage):
     )
     t = result.stdout
 
-    # readable non-empty lines
-    niceT = ln(t)
+    niceT = gl.ln(t)
 
     # address candidate extraction
     preCandidates = extractAddressPairs(niceT)
@@ -65,7 +54,7 @@ def tOrchestration(outputDir, myImage):
             autofill["reviewReason"] = "Rule-based address candidates found. Review before mileage calculation."
 
     
-    # 5. Keep review true if candidates exist but source/destination is blank
+    #  review, source/destination is blank
     if len(autofill.get("candidateLocations", [])) > 0:
         sourceEmpty = (
             autofill.get("sourceStreet", "") == "" and
@@ -87,7 +76,6 @@ def tOrchestration(outputDir, myImage):
             if autofill.get("reviewReason", "") == "":
                 autofill["reviewReason"] = "Location candidates found, but source/destination role needs review."
 
-    # 6. Final output for Electron/React
     finalOutput = {
         "autofill": autofill,
         "metadata": metadata
