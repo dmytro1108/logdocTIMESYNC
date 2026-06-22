@@ -192,12 +192,8 @@ import { ChangeTheme } from './database/Theme'
 export function registerThemeHandlers() {
     const theme = new ChangeTheme()
 
-    ipcMain.handle('theme:add', async(_event, themeId, themeName, themeValue) => {
-        theme.addTheme(themeId, themeName, themeValue)
-    })
-
-    ipcMain.handle('theme:change', async(_event, themeId, themeName, themeValue) => {
-        theme.changeTheme(themeId, themeName, themeValue)
+    ipcMain.handle('theme:change', async(_event, themeId, themeName, themeValue, themeStatus) => {
+        theme.changeTheme(themeId, themeName, themeValue, themeStatus)
     })
 
     ipcMain.handle('theme:current', async(_event) => {

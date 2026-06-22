@@ -9,3 +9,23 @@
     color: var(--ink-text);
     box-shadow: 9px 9px 0 var(--ink-muted);
 }
+
+.myPopUpAutofill {
+    position: fixed;
+    inset: 0; /* pop up positioning */
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: var(--ink-overlay);
+}
+
+.myPopUpBackground {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    border-radius: var(--ink-radius-lg);
+    background: var(--ink-panel);
+    color: var(--ink-text);
+    box-shadow: var(--ink-shadow);
+}

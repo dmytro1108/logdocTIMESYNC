@@ -225,13 +225,9 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
 
     render() {  
         const autofillPopup = (
-            <div>
-                <div>
+            <div className = "myPopUpAutofill">
+                <div className = "myPopUpBackground">
                     <div>
-                        <div>
-                            <p>Autofill</p>
-                            <h2>Confirm locations</h2>
-                        </div>
                         <button onClick={() => this.setState({ showAutofillPopup: false })}>×</button>
                     </div>
 

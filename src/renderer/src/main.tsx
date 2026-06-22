@@ -9,7 +9,7 @@ import { Document } from './components/Document'
 import { Dashboard} from './components/Dashboard'
 
 import './assets/main.css';
-import { createBoard, getBoardByID, getBoardsByUser, updateBoard, deleteBoard, addTheme, changeTheme, currTheme} from './ipc'
+import { createBoard, getBoardByID, getBoardsByUser, updateBoard, deleteBoard, changeTheme, currTheme} from './ipc'
 import { retrieveAllMiles} from './ipc' 
 
 //Constants for easier style prototyping
@@ -74,7 +74,12 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     this.myAccount = new Accounts("", "", "")
     
   }
-  
+
+  // theme setup on startup
+  componentDidMount() {
+    this.currTheme()
+  }
+
   export = async () => {
     const b = this.state.board
     if (!b) return
@@ -137,10 +142,10 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
 
   cTheme = async () => {
     const nextTheme = this.state.theme === "dark" ? "light" : "dark"
-    const nextThemeId = nextTheme === "dark" ? 0 : 1
+    const nextThemeId = nextTheme === "dark" ? 1 : 2
 
     try {
-      await changeTheme(nextThemeId, nextTheme, nextTheme === "dark" ? "#000000" : "#FFFFFF")
+      await changeTheme(nextThemeId, "", "", 1)
       this.setState({
         theme: nextTheme,
         debugMsg: `theme changed to ${nextTheme}`
@@ -153,9 +158,12 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
   }
 
   currTheme = async () => {
-    const theme = await currTheme()
+    const out = await currTheme()  
+    const curr = out[0].name
+  
     this.setState({
-      theme: theme[0].name,
+      theme: curr === "light" ? "light" : "dark",
+      debugMsg: `loaded ${curr} theme`
     })
   }
 

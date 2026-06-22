@@ -50,8 +50,8 @@ export async function addTheme(themeId: number, themeName: string, themeValue: s
   return window.electron.ipcRenderer.invoke('theme:add', themeId, themeName, themeValue)
 }
 
-export async function changeTheme(themeId: number, themeName: string, themeValue: string) {
-  return window.electron.ipcRenderer.invoke('theme:change', themeId, themeName, themeValue)
+export async function changeTheme(themeId: number, themeName: string, themeValue: string, themeStatus: number) {
+  return window.electron.ipcRenderer.invoke('theme:change', themeId, themeName, themeValue, themeStatus)
 }
 
 export async function currTheme() {

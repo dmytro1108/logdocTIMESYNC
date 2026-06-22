@@ -8,28 +8,31 @@ export class ChangeTheme {
     constructor() {
         this.db = DatabaseConnection.getInstance('theme.db')
     }
-
-    public addTheme(themeId: number, themeName: string, themeValue: string) {
+    
+    
+    public changeTheme(themeId: number, themeName: string, themeValue: number, themeStatus: number) {
         this.db.execute(
-            `insert into theme 
-            (id, name, value, status)
-            values (?, ?, ?, ?)
-            `,
-            [themeId, themeName, themeValue, 0]
+            `update theme
+            set status = ?
+            where id = ?`,
+            [themeStatus, themeId]
         )
-    }
+        console.log("THEME DB INSTANCE:", this.db)
 
-    public changeTheme(themeId: number, themeName: string, themeValue: string) {
+        const oppositeThemeId = themeId === 1 ? 2 : 1
+
         this.db.execute(
-            `select * from theme where id = ?`,
-            [themeId]
+            `update theme
+            set status = 0
+            where id = ?`,
+            [oppositeThemeId]
         )
     }
 
     public async currTheme() {
         // parse the theme table, if the table status is 1, return the theme
-        return await this.db.execute(
-            `select * from theme where status = 1`
+        return this.db.query( // query - not execute
+            `select * from theme where status = 1 limit 1`
         )
     }
 }
