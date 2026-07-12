@@ -1,7 +1,6 @@
 import React from "react"
 import '../assets/popup.css';
-import { getPathForFile, performOCR, runReceiptTool, compatibleFile } from "../ipc"
-
+import { getPathForFile, performOCR, runReceiptTool, compatibleFile, enterTripDetails, updateTripDetails, retrieveTotalLogs, runDistanceTool } from "../ipc"
 // styling constants
 const BUTTON_SIZE: string = "150%";
 const FONT_SIZE: string = BUTTON_SIZE;
@@ -154,11 +153,11 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
             }
         }
 
-        if (Object.keys(source).length === 0 && candidates.length > 0) {
+        if (candidates.length > 0) {
             source = candidates[0]
         }
 
-        if (Object.keys(destination).length === 0 && candidates.length > 1) {
+        if (candidates.length > 1) {
             destination = candidates[1]
         }
 
@@ -223,6 +222,49 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         }
     }
 
+    logLocation = async () => {
+
+        await enterTripDetails(
+            this.state.sourceStreet,
+            this.state.sourceCity,
+            this.state.sourceStateinUSA,
+            this.state.sourceZip,
+            this.state.destinationStreet,
+            this.state.destinationCity,
+            this.state.destinationStateinUSA,
+            this.state.destinationZip
+        )
+        this.setState({
+            debugMsg: "Trip details logged successfully"
+        })
+    }
+
+    // the method will convert the location details into a string, use to turn into arguments passed into
+    // the runDistanceTool method
+    turnIntoString = (Street: string, City: string, State: string, Zip: number) => {
+        return `${Street}, ${City}, ${State} ${Zip}`
+    }
+
+    // run the distance tool with arguments
+    processDistance = async () => {
+        // turn source and destination into strings
+        const sourceString = this.turnIntoString(
+            this.state.sourceStreet,
+            this.state.sourceCity,
+            this.state.sourceStateinUSA,
+            this.state.sourceZip
+        )
+        const destinationString = this.turnIntoString(
+            this.state.destinationStreet,
+            this.state.destinationCity,
+            this.state.destinationStateinUSA,
+            this.state.destinationZip
+        )
+
+        // run the distance tool
+        await runDistanceTool(sourceString, destinationString)
+    }
+
     render() {  
         const autofillPopup = (
             <div className = "myPopUpAutofill">
@@ -269,7 +311,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                         <button onClick={() => this.setState({ showAutofillPopup: false })}>
                             Cancel
                         </button>
-                        <button onClick={() => this.setState({ showAutofillPopup: false, debugMsg: "autofill confirmed" })}>
+                        <button onClick={async () => {this.setState({ showAutofillPopup: false, debugMsg: "autofill confirmed" }); this.logLocation(); await this.processDistance()}}>
                             Use Autofill
                         </button>
                     </div>
@@ -307,6 +349,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                     <button onClick={this.processUpload}>
                         Run OCR
                     </button>
+                    DEBUG OUTPUT : {this.debugMsg}
                 </div>
 
                 <div>

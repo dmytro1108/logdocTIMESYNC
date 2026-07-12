@@ -24,7 +24,7 @@ type MainViewProps = {
   board: Dashboard
   exportYear: number
   activeTool: "mileage" | "documents" | "notifications" | null
-  theme: "dark" | "light"
+  theme: "brown" | "light"
 }
 
 type DisplayColProp = { // render board state with columns
@@ -37,14 +37,14 @@ type DisplayColProp = { // render board state with columns
   email: string
   password: string
   demoBoardID: number
-  theme: "dark" | "light"
+  theme: "brown" | "light"
   activeTool: "mileage" | "documents" | "notifications" | null
 }
 
 class MainView extends React.Component<MainViewProps, DisplayColProp> {
   board: Dashboard
   activeTool: "mileage" | "documents" | "notifications" | null
-  theme: "dark" | "light"
+  theme: "brown" | "light"
   newLink: any
   myAccount: Accounts
 
@@ -77,7 +77,7 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
 
   // theme setup on startup
   componentDidMount() {
-    this.currTheme()
+    this.currentTheme()
   }
 
   export = async () => {
@@ -141,8 +141,8 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
   }
 
   cTheme = async () => {
-    const nextTheme = this.state.theme === "dark" ? "light" : "dark"
-    const nextThemeId = nextTheme === "dark" ? 1 : 2
+    const nextTheme = this.state.theme === "brown" ? "light" : "brown"
+    const nextThemeId = nextTheme === "brown" ? 1 : 2
 
     try {
       await changeTheme(nextThemeId, "", "", 1)
@@ -157,12 +157,12 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     }
   }
 
-  currTheme = async () => {
+  currentTheme = async () => {
     const out = await currTheme()  
     const curr = out[0].name
   
     this.setState({
-      theme: curr === "light" ? "light" : "dark",
+      theme: curr === "light" ? "light" : "brown",
       debugMsg: `loaded ${curr} theme`
     })
   }
@@ -226,7 +226,7 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
           <div>
             <div>Welcome</div>
             <button onClick={() => { this.cTheme() }}>
-              {this.state.theme === "dark" ? "light" : "dark"}
+              {this.state.theme === "brown" ? "light" : "brown"}
             </button>
           </div>
 

@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { retrieveTotalLogs } from '../ipc'
+
 type MyDashboardProps = {
   onClose: () => void
 }
@@ -11,6 +13,7 @@ type MyDashboardState = {
   documentCount: number,
   upcomingDeadlineCount: number,
   id: number
+  debugMsg: string
 }
 
 
@@ -21,6 +24,7 @@ export class Dashboard extends React.Component<MyDashboardProps, MyDashboardStat
     documentCount: number
     upcomingDeadlineCount: number
     id: number
+    debugMsg: string
 
     constructor(props: MyDashboardProps) {
       super(props)
@@ -30,6 +34,7 @@ export class Dashboard extends React.Component<MyDashboardProps, MyDashboardStat
       this.documentCount = 0
       this.upcomingDeadlineCount = 0
       this.id = 0
+      this.debugMsg = ""
 
       this.state = {
         year: 0,
@@ -37,10 +42,26 @@ export class Dashboard extends React.Component<MyDashboardProps, MyDashboardStat
         totalExpenses: 0,
         documentCount: 0,
         upcomingDeadlineCount: 0,
-        id: 0
+        id: 0,
+        debugMsg: ""
       }
     }
-    
+  
+  refreshDashboard = async () => {
+    const a = await retrieveTotalLogs()
+
+    let candidates: any[] = []
+
+    if (Array.isArray(a)) {
+        candidates = a
+    }
+
+    this.setState({
+      documentCount: candidates[0].butt || "thick" ,
+      totalMiles: candidates[0].face || "booty",
+    })
+  }
+
   render() {
 
     return (
@@ -48,6 +69,7 @@ export class Dashboard extends React.Component<MyDashboardProps, MyDashboardStat
 
         <header style = {{ "fontSize": "45px", "gap": "4px"}}>Dashboard</header>
         <div>
+          <p>{this.state.debugMsg}</p>
           <div>
             <label htmlFor="export-year">Export Year: </label>
             <span>{this.state.year}</span>
@@ -69,7 +91,7 @@ export class Dashboard extends React.Component<MyDashboardProps, MyDashboardStat
             <span>{this.state.upcomingDeadlineCount}</span>
           </div>
         </div>
-
+        <button onClick = {this.refreshDashboard}>Refresh</button>
       </div>
     )
   }

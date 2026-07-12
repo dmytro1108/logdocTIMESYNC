@@ -45,6 +45,25 @@ export async function deleteAllMiles() {
   return window.electron.ipcRenderer.invoke('mileage:deleteAll')
 }
 
+// trip details
+export async function enterTripDetails(sourceStreet: string, sourceCity: string, sourceState: string, sourceZip: number, destStreet: string, destCity: string, destState:string, destZip:number) {
+  return window.electron.ipcRenderer.invoke('trip:enterDetails', { sourceStreet, sourceCity, sourceState, sourceZip, destStreet, destCity, destState, destZip })
+}
+
+export async function updateTripDetails(milageTotal: number, tripFromDate: string, tripToDate: string, logDate: string) {
+  return window.electron.ipcRenderer.invoke('trip:updateDetails', { milageTotal, tripFromDate, tripToDate, logDate })
+}
+
+export async function retrieveTotalLogs() {
+  return window.electron.ipcRenderer.invoke('trip:retrieveTotalLogs')
+}
+
+// distance tool
+export async function runDistanceTool(source: string, destination: string): Promise<number> {
+  const stdout = await window.electron.ipcRenderer.invoke('document:distanceTool', source, destination)
+  return Number(String(stdout).trim())
+}
+
 // theme
 export async function addTheme(themeId: number, themeName: string, themeValue: string) {
   return window.electron.ipcRenderer.invoke('theme:add', themeId, themeName, themeValue)

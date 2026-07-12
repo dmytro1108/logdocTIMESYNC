@@ -15,11 +15,36 @@ class DatabaseConnection {
 
     private initializeSchema() {
 
+        // for renderer
         this.db.prepare(`
             create table if not exists theme (
             id integer primary key,
             name varchar(255),
-            value text
+            value varchar(255),
+            status integer
+            )`).run()
+
+        // dashboard and trip log
+        this.db.prepare(`
+            create table if not exists tripLocation (
+            trip_id integer primary key,
+            sourceStreet varchar(255),
+            sourceCity varchar(255),
+            sourceState varchar(255),
+            sourceZip integer,
+            destStreet varchar(255),
+            destCity varchar(255),
+            destState varchar(255),
+            destZip integer
+            )`).run()
+
+        this.db.prepare(`
+            create table if not exists tripDetails (
+            details_id integer primary key,
+            milageTotal integer,
+            tripFromDate varchar(255),
+            tripToDate varchar(255),
+            logDate varchar(255)
             )`).run()
 
         this.db.prepare(`

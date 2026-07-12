@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import { registerBoardHandlers, registerAccountHandlers, registerMileageHandlers, registerThemeHandlers} from './ipc-handlers'
+import { registerBoardHandlers, registerAccountHandlers, registerMileageHandlers, registerThemeHandlers, registerTripHandlers} from './ipc-handlers'
 import { DatabaseConnection } from './database/DatabaseConnection'
 import { AccountConnection } from './database/AccountConnection'
 import { ChangeTheme } from './database/Theme'
@@ -59,45 +59,21 @@ app.whenReady().then(() => {
   ipcMain.on('ping', () => console.log('pong'))
 
   // Initialize database and IPC handlers
-  // const dbPath = join(app.getPath('userData'), 'toolflow.db')
-  // const accountsDbPath = join(app.getPath('userData'), 'accounts.db')
+  const dbPath = join(app.getPath('userData'), 'toolflow.db')
+  const accountsDbPath = join(app.getPath('userData'), 'accounts.db')
 
-  // const db = DatabaseConnection.getInstance(dbPath)
-  // const accountsDb = AccountConnection.getInstance(accountsDbPath)
+  const db = DatabaseConnection.getInstance(dbPath)
+  const accountsDb = AccountConnection.getInstance(accountsDbPath)
 
   /* Commented out as users are now separated
   db.execute(
     `INSERT OR IGNORE INTO users (id, createdAt, username, password) VALUES (1, ?, 'demo', 'demo')`,
     [Date.now()]
   )
- 
 
   accountsDb.execute(
     `INSERT OR IGNORE INTO users (id, createdAt, username, password, email) VALUES (1, ?, 'demo', 'demo', 'demo@example.com')`,
     [Date.now()]
-  )
-  */
-  
-  const dbTheme = join(app.getPath('userData'), 'theme.db')
-  const themeDB = DatabaseConnection.getInstance(dbTheme)
-  /*
-  // delete the table
-  themeDB.execute(
-    `DROP TABLE IF EXISTS theme`
-  )
-  
-  themeDB.execute(
-    `create table if not exists theme 
-    (id integer, name varchar(255), value varchar(255), status integer)
-    `
-  )
-
-  // insert black and white into the theme table
-  themeDB.execute(
-    `insert into theme (id, name, value, status) values (1, 'dark', '#000000', 0)`
-  )
-  themeDB.execute(
-    `insert into theme (id, name, value, status) values (2, 'light', '#FFFFFF', 0)`
   )
   */
 
@@ -105,6 +81,7 @@ app.whenReady().then(() => {
   registerAccountHandlers()
   registerMileageHandlers()
   registerThemeHandlers()
+  registerTripHandlers()
   createWindow()
 
   app.on('activate', function () {

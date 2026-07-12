@@ -188,6 +188,64 @@ export function registerMileageHandlers() {
     })
 }
 
+import { TripLogging } from './database/Triptails'
+export function registerTripHandlers() {
+    const l = new TripLogging()
+
+    ipcMain.handle('trip:enterDetails', async(_event, data) => {
+        return l.enterDetails(
+            data.sourceStreet,
+            data.sourceCity,
+            data.sourceState,
+            data.sourceZip,
+            data.destStreet,
+            data.destCity,
+            data.destState,
+            data.destZip
+        )
+    })
+
+    ipcMain.handle('trip:updateDetails', async(_event, data) => {
+        return l.updateTripDetails(
+            data.milageTotal,
+            data.tripFromDate,
+            data.tripToDate,
+            data.logDate
+        )
+    })
+
+    ipcMain.handle('trip:retrieveTotalLogs', async(_event) => {
+        return l.retrieveTotalLogs()
+    })
+}
+
+ipcMain.handle("document:distanceTool", async (_event, loc1, loc2) => {    
+    const projectRoot = process.cwd()
+    const scriptPath = path.join(projectRoot, "distanceTool", "distanceProcessing.py")
+    
+    const pythonPath = "your python path here"
+    
+    return new Promise<number>((resolve, reject) => {
+        execFile(pythonPath, [scriptPath, loc1, loc2], (error, stdout, stderr) => {
+
+            if (0) console.log("this is the stdout: "+ stdout)
+
+            // log the details
+            const l = new TripLogging()
+            const now = new Date().toLocaleString()
+
+            l.updateTripDetails(
+                parseFloat(stdout),
+                "",
+                "",
+                now
+            )
+
+            resolve(parseFloat(stdout))
+        })
+    }) 
+})
+
 import { ChangeTheme } from './database/Theme'
 export function registerThemeHandlers() {
     const theme = new ChangeTheme()

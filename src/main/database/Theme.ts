@@ -6,7 +6,7 @@ export class ChangeTheme {
     private db: DatabaseConnection
 
     constructor() {
-        this.db = DatabaseConnection.getInstance('theme.db')
+        this.db = DatabaseConnection.getInstance('toolflow.db')
     }
     
     
@@ -19,13 +19,20 @@ export class ChangeTheme {
         )
         console.log("THEME DB INSTANCE:", this.db)
 
-        const oppositeThemeId = themeId === 1 ? 2 : 1
+        // reset other theme status
+        let otherThemeID = 1
+
+        if (themeId == 1) {
+            otherThemeID = 0
+        } else {
+            otherThemeID = 1
+        }
 
         this.db.execute(
             `update theme
             set status = 0
             where id = ?`,
-            [oppositeThemeId]
+            [otherThemeID]
         )
     }
 

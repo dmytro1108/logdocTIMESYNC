@@ -1,40 +1,23 @@
-# ToolFlow (legacy name: KanFLOW)
+# T Tool
 
-ToolFlow is an Electron desktop prototype for **local driver workflow utilities**, not a full Kanban product.
+T Tool is an utility app whose purpose is to provide a truckers enviornment list of tools, with logging ability, and ability to calculate miles, recieve notifications and turn their data into insightful summaries.
 
-Today, the app is centered on:
-- local account sign-up/login
-- mileage logging and history
-- receipt/image OCR workflows
-- simple JSON export from the dashboard view
+## App summary:
 
-You will still see older Kanban-oriented naming in parts of the codebase (`kanflow-temp`, `Kan-App Workspace`, old docs/classes), but the current user-facing direction is utility tools.
+### 1) accounts
+- accounts act as entry point to the users personal data.
+NOTE: Demo account seeded on startup (`demo` / `demo`)
 
-## What the app currently does
+### 2) manual mileage log
+- manually log miles by providing starting and ending mileage log
+- clear or delete previous mileage records
 
-### 1) Local account flow
-- Sign up and log in through IPC handlers in the Electron main process
-- User records stored in local SQLite (`accounts.db`)
-- Demo account seeded on startup (`demo` / `demo`)
+### 3) automatic mileage log
+- requires a document/receipt with clear source and destination addresses
+- deterministically processes the document for an autofill pre-fill step
+- finally OSRM server output is logged and displayed on the dashboard
 
-### 2) Mileage tracker
-- Log start and end odometer values
-- Auto-calculate total miles
-- Enforce basic validation:
-  - numbers must be valid
-  - end miles cannot be less than start miles
-  - new start miles cannot be less than last logged end miles
-- View mileage history
-- Delete one log or clear all logs
-
-### 3) Document OCR tool
-- Drag-and-drop receipt/image files (`.png`, `.jpg`, `.jpeg`)
-- Runs two OCR paths:
-  - Tesseract CLI (`document:OCR`)
-  - Python receipt pipeline (`document:receiptTool`) under `receiptTool/`
-- Displays OCR output in-app
-
-### 4) Export
+### 5) export
 - Exports dashboard-style JSON via save dialog (`board:exportJsonToFile`)
 
 ## Architecture
@@ -55,25 +38,23 @@ src/
     types.ts                 Shared TypeScript interfaces
 ```
 
-## Local data and files
-
-- `toolflow.db`: mileage logs and board-related tables
-- `accounts.db`: local user records
-- Both are created in Electron `userData`
-- Receipt tool artifacts are written under `receiptTool/detections/`
-
-See: `SETUP_SQLITE.md`
-
 ## Requirements
 
 Base app:
 - Node.js + npm
+- consistant python exec path
 
 For OCR features:
 - `tesseract` available on system PATH
 - Python 3 environment with the receipt tool dependencies (`cv2`, `numpy`, `Pillow`, `transformers`, `torch`, `tqdm`)
 
 If OCR dependencies are missing, account and mileage features can still run.
+
+For OSRM features:
+- consult the `DISTANCE-DOC.md` file at root for installation and setup of Nominatim and OSRM for the project.
+- modify the fields in main "your x here" inside the `distanceProcesessing.py` file to hook everything up
+
+NOTE: it is recommended that the `*.osrm` file is moved to the distanceTool folder, after installation.
 
 ## Development
 
@@ -90,12 +71,3 @@ npm run lint
 npm run test
 npm run build
 ```
-
-## Current state (important)
-
-This repository is a **work-in-progress hybrid**:
-- the shipped UI is tool-centric (accounts + mileage + OCR)
-- legacy Kanban naming and partially migrated modules are still present
-- some board/database paths are not fully aligned yet
-
-Use this repo as a local desktop prototype focused on utility workflows, with ongoing cleanup of legacy structure.

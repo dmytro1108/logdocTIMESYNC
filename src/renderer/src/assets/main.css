@@ -12,15 +12,15 @@ body,
   box-sizing: border-box;
 }
 
-.mainview {
-  --ink-bg: #f1f1f1;
+.mainview { /* tokenized css*/
+  --ink-bg: #d0d0d0;
   --ink-panel: #ffffff;
-  --ink-panel-soft: #f8fafc;
+  --ink-panel-soft: #d4e0ec;
   --ink-text: #111111;
   --ink-muted: #5d6570;
   --ink-line: #111111;
-  --ink-cyan: #22d3ee;
-  --ink-cyan-soft: rgba(34, 211, 238, 0.22);
+  --ink-golden: #eebe22;
+  --ink-golden-brown: rgba(238, 190, 34, 0.18);
   --ink-shadow: 6px 6px 0 var(--ink-line);
   --ink-shadow-small: 4px 4px 0 var(--ink-line);
   --ink-radius: 18px;
@@ -28,16 +28,16 @@ body,
   --ink-dot-opacity: 0.14;
 }
 
-.mainview.theme-dark {
+.mainview.theme-brown{
   --ink-bg: #05070c;
-  --ink-panel: #0f172a;
-  --ink-panel-soft: #111827;
+  --ink-panel: #2a0f0f;
+  --ink-panel-soft: #271111;
   --ink-text: #f8fafc;
   --ink-muted: #aeb7c7;
   --ink-line: #ffffff;
-  --ink-cyan: #22d3ee;
-  --ink-cyan-soft: rgba(34, 211, 238, 0.18);
-  --ink-shadow: 6px 6px 0 rgba(255, 255, 255, 0.82);
+  --ink-golden: #eebe22;
+  --ink-golden-brown: rgba(238, 190, 34, 0.18);
+  --ink-shadow: 2px 2px 0 rgba(255, 255, 255, 0.82);
   --ink-shadow-small: 4px 4px 0 rgba(255, 255, 255, 0.82);
   --ink-dot-opacity: 0.2;
 }
@@ -49,7 +49,7 @@ body,
   grid-template-columns: 260px minmax(0, 1fr) 92px; /* fixed width column */
   background-size: 14px 14px;
   color: var(--ink-text);
-  font-family: Inter, Arial, sans-serif;
+  font-family: Verdana, Geneva, sans-serif;;
   overflow: hidden;
 }
 
@@ -74,7 +74,7 @@ body,
   overflow: hidden;
   padding: 14px;
   background:
-    radial-gradient(circle at top right, var(--ink-cyan-soft), transparent 28%),
+    radial-gradient(circle at top right, var(--ink-golden-brown), transparent 28%),
     var(--ink-bg);
 }
 
@@ -111,7 +111,7 @@ button {
 }
 
 button:hover {
-  background: var(--ink-cyan);
+  background: var(--ink-golden);
   color: #111111;
   transform: translate(-1px, -1px);
 }
@@ -135,6 +135,6 @@ input {
 
 input:focus {
   outline: none;
-  border-color: var(--ink-cyan);
-  box-shadow: 0 0 0 4px var(--ink-cyan-soft);
+  border-color: var(--ink-golden);
+  box-shadow: 0 0 0 4px var(--ink-golden-brown);
 }
