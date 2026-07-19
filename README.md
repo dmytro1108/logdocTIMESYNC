@@ -10,8 +10,14 @@ T Tool is an utility app whose purpose is to provide a truckers enviornment list
 - accounts act as entry point to the users personal data.
 NOTE: Demo account seeded on startup (`demo` / `demo`)
 
-<img src="./3.gif" alt="demo2" width="200">
-<img src="./4.gif" alt="demo3" width="200">
+<div style="display: flex;">
+  <div class="column" style="flex: 33.33%; padding: 5px;">
+    <img src="./3.gif" alt="demo2" width="200">
+  </div>
+  <div class="column" style="flex: 33.33%; padding: 5px;">
+    <img src="./4.gif" alt="demo3" width="200">
+  </div>
+</div>
 
 ### 2) manual mileage log
 - manually log miles by providing starting and ending mileage log
