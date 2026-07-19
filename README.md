@@ -1,6 +1,8 @@
-# TruckTime LogSync
+# T Tool
 
-TruckTime LogSync is an utility app whose purpose is to provide a truckers enviornment list of tools, with logging ability, and ability to calculate miles, recieve notifications and turn their data into insightful summaries.
+T Tool is an utility app whose purpose is to provide a truckers enviornment list of tools, with logging, miles calculator, display tax related notifications and turn their data into insightful summaries.
+
+<img src="./1.png" alt="demo1" width="600">
 
 ## App summary:
 
@@ -8,17 +10,26 @@ TruckTime LogSync is an utility app whose purpose is to provide a truckers envio
 - accounts act as entry point to the users personal data.
 NOTE: Demo account seeded on startup (`demo` / `demo`)
 
+<img src="./3.gif" alt="demo2" width="200">
+<img src="./4.gif" alt="demo3" width="200">
+
 ### 2) manual mileage log
 - manually log miles by providing starting and ending mileage log
 - clear or delete previous mileage records
+
+<img src="./5.gif" alt="demo4" width="400">
 
 ### 3) automatic mileage log
 - requires a document/receipt with clear source and destination addresses
 - deterministically processes the document for an autofill pre-fill step
 - finally OSRM server output is logged and displayed on the dashboard
 
+<img src="./6.gif" alt="demo5" width="400">
+
 ### 5) export
 - Exports dashboard-style JSON via save dialog (`board:exportJsonToFile`)
+
+<img src="./7.gif" alt="demo6" width="400">
 
 ## Architecture
 
