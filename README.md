@@ -11,11 +11,11 @@ T Tool is an utility app whose purpose is to provide a truckers enviornment list
 NOTE: Demo account seeded on startup (`demo` / `demo`)
 
 <div style="display: flex;">
-  <div class="column" style="flex: 33.33%; padding: 5px;">
-    <img src="./3.gif" alt="demo2" width="200">
+  <div style="flex: 50%; padding: 5px;">
+    <img src="./3.gif" alt="demo2" style="width: 100%; max-width: 200px;">
   </div>
-  <div class="column" style="flex: 33.33%; padding: 5px;">
-    <img src="./4.gif" alt="demo3" width="200">
+  <div style="flex: 50%; padding: 5px;">
+    <img src="./4.gif" alt="demo3" style="width: 100%; max-width: 200px;">
   </div>
 </div>
 
