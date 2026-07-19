@@ -1,5 +1,3 @@
-COPILOT.md
-
 Role
 
 You are helping maintain and explain this repository.
