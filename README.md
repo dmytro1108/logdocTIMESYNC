@@ -1,6 +1,6 @@
-# T Tool
+# TrucktimeLOGSYNC
 
-T Tool is an utility app whose purpose is to provide a truckers enviornment list of tools, with logging, miles calculator, display tax related notifications and turn their data into insightful summaries.
+TrucktimeLOGSYNC is an utility app whose purpose is to provide a truckers enviornment list of tools, with logging, miles calculator, display tax related notifications and turn their data into insightful summaries.
 
 <img src="./1.png" alt="demo1" width="600">
 
