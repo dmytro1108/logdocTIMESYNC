@@ -33,4 +33,3 @@ jobs:
             ${{ runner.os }}-electron-
 
       - run: npm ci
-      - run: npm run build
