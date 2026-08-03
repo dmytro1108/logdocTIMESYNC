@@ -2,40 +2,44 @@
 
 TrucktimeLOGSYNC is an utility app whose purpose is to provide a truckers enviornment list of tools, with logging, miles calculator, display tax related notifications and turn their data into insightful summaries.
 
-<img src="./1.png" alt="demo1" width="600">
+<img src="./resources/1.png" alt="demo1" width="600">
 
 ## App summary:
 
 ### 1) accounts
+
 - accounts act as entry point to the users personal data.
 NOTE: Demo account seeded on startup (`demo` / `demo`)
 
 <div style="display: flex;">
-  <div class="column" style="flex: 33.33%; padding: 5px;">
-    <img src="./3.gif" alt="demo2" width="200">
+  <div class="column" style= padding: 5px;">
+    <img src="./resources/3.gif" alt="demo2" width="200">
   </div>
-  <div class="column" style="flex: 33.33%; padding: 5px;">
-    <img src="./4.gif" alt="demo3" width="200">
+  <div class="column" style= padding: 5px;">
+    <img src="./resources/4.gif" alt="demo3" width="200">
   </div>
 </div>
 
 ### 2) manual mileage log
+
 - manually log miles by providing starting and ending mileage log
 - clear or delete previous mileage records
 
-<img src="./5.gif" alt="demo4" width="400">
+<img src="./resources/5.gif" alt="demo4" width="400">
 
 ### 3) automatic mileage log
+
 - requires a document/receipt with clear source and destination addresses
 - deterministically processes the document for an autofill pre-fill step
 - finally OSRM server output is logged and displayed on the dashboard
 
-<img src="./6.gif" alt="demo5" width="400">
+<img src="./resources/6.gif" alt="demo5" width="400">
 
 ### 5) export
+
 - Exports dashboard-style JSON via save dialog (`board:exportJsonToFile`)
 
-<img src="./7.gif" alt="demo6" width="400">
+<img src="./resources/7.gif" alt="demo6" width="400">
 
 ## Architecture
 
