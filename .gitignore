@@ -6,6 +6,10 @@ dist/
 out/
 build/
 
+# Tools
+receiptTool/
+distanceTool/
+
 # Database
 *.db
 *.sqlite
@@ -15,6 +19,9 @@ build/
 
 #credentials for mariadb server
 src/main/credentials.json
+
+# unit tests
+src/dima-sql-tests/
 
 #python cache files
 __pycache__
