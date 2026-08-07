@@ -13,6 +13,7 @@ type MilageState = {
     endingMiles: string,
     totalMiles: string,
     debugMsg: string,
+    showHistoryDropdown: boolean,
     mileageLogs: any[],
     lastEndMiles: null | number,
 }
@@ -22,6 +23,7 @@ export class Mileage extends React.Component<MileageProps, MilageState> {
         endingMiles: "",
         totalMiles: "",
         debugMsg: "",
+        showHistoryDropdown: false,
         mileageLogs: [],
         lastEndMiles: null
     }
@@ -116,10 +118,14 @@ export class Mileage extends React.Component<MileageProps, MilageState> {
                     </label>
                 </div>
 
-                <div> {/* Record mileage */}
+                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}> {/* Record mileage */}
                     <button onClick={async () => { await this.safeLog() }}>
                         save log
                     </button>
+                    <button onClick = {() => this.setState({ showHistoryDropdown: !this.state.showHistoryDropdown })}>
+                        history
+                    </button>
+
                 </div>
             </div>
         </div>
@@ -139,12 +145,12 @@ export class Mileage extends React.Component<MileageProps, MilageState> {
                 </div>
             </div>
 
-            <div style = {{ "padding": "10px" }}>
+            <div style={{ padding: "10px", maxHeight: "300px", overflowY: "auto" }}>
                 {this.state.mileageLogs.length > 0 ? (
                     this.state.mileageLogs.map((log) => (
                         <div key={log.id} style = {{ "padding": "10px" }}>
                             <div>
-                                <strong>{log.totalMiles} mi</strong>
+                                <strong>{log.totalMiles}</strong>
                                 <span>{new Date(log.dateCreated).toLocaleDateString()}</span>
                             </div>
 
@@ -171,8 +177,8 @@ export class Mileage extends React.Component<MileageProps, MilageState> {
                 {mileageWindow}
             </div>
             <div style = {{ "height": "10px", "padding": "10px", "borderTop": "2px dashed var(--ink-line)", "margin": "0"}}></div>
-            {mileageHistoryDashboard}
-        </div>
+                {this.state.showHistoryDropdown ? mileageHistoryDashboard : null}       
+            </div>
     )
   }
 }

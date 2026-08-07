@@ -207,7 +207,7 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
    const loggedInWindow = (
       <div>
         <div>
-          <div style={{ fontWeight: 700, marginBottom: 10 }}>
+          <div style={{ fontWeight: 500, marginBottom: 10 }}>
           </div>
           <p style = {{ fontSize: BUTTON_FONT_SIZE}}>User:  {this.state.username} </p> 
           <p style = {{ fontSize: BUTTON_FONT_SIZE}}>Email: {this.state.email} </p> 
@@ -222,30 +222,70 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
     
     return (
       <div className={`mainview theme-${this.state.theme}`}>
-        <aside className = "leftSidebar">
-          <div>
-            <div>Welcome</div>
-            <button onClick={() => { this.cTheme() }}>
-              {this.state.theme === "brown" ? "light" : "brown"}
-            </button>
-          </div>
-
-          <div>
-            <button onClick={() => { this.login() }}>login</button>
-            <button onClick={() => { this.signUp() }}>sign up</button>
-            <button onClick={() => { this.export() }}>export</button>
-          </div>
-
-          <div>
-            {this.state.logInState == "login" ? loginWindow : (this.state.logInState == "signUp" ? signUpWindow : (this.state.logInState == "loggedIn" ? loggedInWindow : null))}
-          </div>
-          <div style = {{ "padding": "10px" }}>
-            {this.state.debugMsg}
-          </div>
-
-        </aside>
-
+    
         <main className="mainPanel">
+
+        <div style={{position: "fixed", top: "20px", left: "10px", gap: "10px"}}>
+          <div className="left-sidebar-stuff">
+            <button className="button" style={{marginBottom: "10px", width: "50px", height: "44px", padding: 0, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", marginRight: "15px" }}><img draggable="false" style={{ width: "150%", height: "150%", objectFit: "cover", display: "block" }} src={this.state.theme === "brown" ? "/dark-layout-sidebar-icon.png" : "/light-layout-sidebar-icon.png"} /></button>
+            <aside className="leftSidebar" style={{ marginLeft: "-15px" }}>{/* sidebar content */}
+
+              <div>
+                  <button style={{ marginBottom: "10px", marginRight: "10px", width: "90px", height: "44px", boxSizing: "border-box" }}className="button" fun-tip-and-more="❌ currently signed in" onClick={() => { this.login() }}>login</button>
+                  <button style={{ marginBottom: "10px", marginRight: "10px", width: "90px", height: "44px", boxSizing: "border-box" }} className="button" fun-tip-and-more="☝️ choose your theme" onClick={() => { this.cTheme() }}>{this.state.theme === "brown" ? "light" : "brown"}</button>
+                  <button style={{ marginBottom: "10px", marginRight: "10px", width: "90px", height: "44px", boxSizing: "border-box" }} className="button" fun-tip-and-more="➕ create a new account" onClick={() => { this.signUp() }}>sign up</button>
+                  <button style={{ marginBottom: "10px", marginRight: "10px", width: "90px", height: "44px", boxSizing: "border-box" }} className="button" fun-tip-and-more="⬇ export your data for 2026" onClick={() => { this.export() }}>export</button>
+              </div>
+
+              <div>
+                {this.state.logInState === "login" 
+                  ? loginWindow 
+                  : (this.state.logInState === "signUp" 
+                      ? signUpWindow 
+                      : (this.state.logInState === "loggedIn" ? loggedInWindow : null)
+                    )}
+              </div> 
+              
+              <div style={{ padding: "10px" }}>
+                {this.state.debugMsg}
+              </div>
+            </aside>
+          </div>
+
+          <div className="left-sidebar-stuff">
+            <button className="button" style={{marginBottom: "10px", width: "50px", height: "44px", padding: 0, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", marginRight: "15px" }} >
+            <img draggable="false" style={{ width: "150%", height: "150%", objectFit: "cover", display: "block" }} src={this.state.theme === "brown" ? "/dark-apps.png" : "/light-apps.png"}/></button>
+            
+            <aside className="leftSidebar" style={{ marginLeft: "-15px" }}>{/* sidebar content */}
+              
+            <button className="button typewriter" style={{marginBottom: "10px", overflow: "hidden",  width: "auto", height: "44px", padding: "0 8px", display: "flex", alignItems: "center", justifyContent: "flex-start", boxSizing: "border-box", marginRight: "15px" }} onClick={async () => {this.setState({ activeTool: "mileage", debugMsg: "mileage tool opened" });}}>
+              <img draggable="false" style={{ width: "30px", height: "30px", objectFit: "contain"}} src={this.state.theme === "brown" ? "/dark-road.png" : "/light-road.png"} alt="Mileage Tracker"/><span className="typewriter-text" style={{ marginLeft: "10px", marginRight: "10px" }}>mileage tool</span></button>
+            <button className="button typewriter" style={{marginBottom: "10px", overflow: "hidden", width: "auto", height: "44px", padding: "0 8px", display: "flex", alignItems: "center", justifyContent: "flex-start", boxSizing: "border-box", marginRight: "15px" }} onClick={async () => {this.setState({ activeTool: "documents", debugMsg: "documents tool opened" });}}>
+              <img draggable="false" style={{ width: "30px", height: "30px", objectFit: "contain"}}  src={this.state.theme === "brown" ? "/dark-doc.png" : "/light-doc.png"}/><span className="typewriter-text" style={{ marginLeft: "10px", marginRight: "10px" }}>document tool</span></button>
+            <button className="button typewriter" style={{overflow: "hidden", width: "auto", height: "44px", padding: "0 8px", display: "flex", alignItems: "center", justifyContent: "flex-start", boxSizing: "border-box", marginRight: "15px" }} onClick={async () => {const logs = await retrieveAllMiles(); this.setState({ debugMsg: `loaded ${logs.length} mileage logs` })}}>
+              <img draggable="false" style={{ width: "30px", height: "30px", objectFit: "contain"}} src={this.state.theme === "brown" ? "/dark-mark.png" : "/light-mark.png"} /><span className="typewriter-text" style={{ marginLeft: "10px", marginRight: "10px" }}>coming soon...</span></button>
+            </aside>
+          </div>
+            
+        </div>
+
+        <div style={{ position: "fixed", bottom: "10px", left: "10px", display: "flex", flexDirection: "column", gap: "10px", zIndex: 100 }}>
+          <div className="left-sidebar-stuff">
+            <button className="button" style={{ marginBottom: "10px", width: "50px", height: "44px", padding: 0, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box", marginRight: "15px" }}>
+            <img draggable="false" style={{ width: "150%", height: "150%", objectFit: "cover", display: "block" }} src={this.state.theme === "brown" ? "/dark-set.png" : "/light-set.png"} /></button>
+            
+
+            <aside className="leftBottomCorner" style={{ marginLeft: "-15px" }}>{/* sidebar content */}
+            
+            <button className="button typewriter" style={{marginBottom: "10px",overflow: "hidden", width: "auto", height: "44px", padding: "0 8px", display: "flex", alignItems: "center", justifyContent: "flex-start", boxSizing: "border-box", marginRight: "15px" }}>
+              <img draggable="false" style={{ width: "30px", height: "30px", objectFit: "contain"}} src={this.state.theme === "brown" ? "/dark-cons.png" : "/light-cons.png"} /><span className="typewriter-text" style={{ marginLeft: "10px", marginRight: "10px" }}>developer view</span></button>
+            <button className="button typewriter" style={{overflow: "hidden", width: "auto", height: "44px", padding: "0 8px", display: "flex", alignItems: "center", justifyContent: "flex-start", boxSizing: "border-box", marginRight: "15px" }}>
+              <img draggable="false" style={{ width: "30px", height: "30px", objectFit: "contain"}} src={this.state.theme === "brown" ? "/dark-mark.png" : "/light-mark.png"} /><span className="typewriter-text" style={{ marginLeft: "10px", marginRight: "10px" }}>Coming soon...</span></button>
+            
+            </aside>
+          </div>
+        </div>
+
           <section>
             <div>{/* the dashboard view changes between the active tooling  */}
               {this.state.activeTool === null ? ( <Dashboard year={"1991"} /> ) : null}
@@ -254,20 +294,6 @@ class MainView extends React.Component<MainViewProps, DisplayColProp> {
             </div>
           </section>
         </main>
-
-        <aside className = "rightDock">
-          <button title="Mileage Tracker" onClick={async () => {this.setState({ activeTool: "mileage", debugMsg: "mileage tool opened" });}}>
-            <img style={{ width: "44px", height: "44px", objectFit: "contain" }} src="/icon.png" alt="Mileage Tracker"/>
-          </button>
-
-          <button title="Show Mileage History" onClick={async () => {const logs = await retrieveAllMiles(); this.setState({ debugMsg: `loaded ${logs.length} mileage logs` })}}>
-            <img style={{ width: "44px", height: "44px", objectFit: "contain" }} src="/icon2.png"alt="show mileage history"/> 
-          </button>
-
-          <button title="Upload Document" onClick={async () => {this.setState({ activeTool: "documents", debugMsg: "documents tool opened" });}}>
-            <img style={{ width: "44px", height: "44px", objectFit: "contain" }} src="/icon3.png" alt="Upload document"/>
-          </button>
-        </aside>
       </div>
     )
   }

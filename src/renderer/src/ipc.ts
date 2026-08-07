@@ -58,6 +58,27 @@ export async function retrieveTotalLogs() {
   return window.electron.ipcRenderer.invoke('trip:retrieveTotalLogs')
 }
 
+export async function clearTripDetails() { /* THIS IS TEMPORARY CLEARTRIP (CLEAR TRIP) */
+  return window.electron.ipcRenderer.invoke('trip:clearTripDetails')
+}
+
+// log history functions
+export async function updateLogHistory(logDate: string, myTrip: string) {
+  return window.electron.ipcRenderer.invoke('trip:updateLogHistory', logDate, myTrip)
+}
+
+export async function retrieveLogHistory() {
+  return window.electron.ipcRenderer.invoke('trip:retrieveLogHistory')
+}
+
+export async function deleteLogHistory(id: number) {
+  return window.electron.ipcRenderer.invoke('trip:deleteLogHistory', id)
+}
+
+export async function clearLogHistory() {
+  return window.electron.ipcRenderer.invoke('trip:clearLogHistory')
+}
+
 // distance tool
 export async function runDistanceTool(source: string, destination: string): Promise<number> {
   const stdout = await window.electron.ipcRenderer.invoke('document:distanceTool', source, destination)

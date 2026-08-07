@@ -1,4 +1,3 @@
-# osrm-routed -p 5001 -a MLD washington-260627.osm.pbf
 import subprocess
 import json
 import requests
@@ -25,12 +24,12 @@ if __name__ == "__main__": # python3 distanceProcessing.py "<source A>" "<destin
 	args = parser.parse_args()
 	
 	
-	osrm_path = "your base path here" / "your osrm name here"
+	osrm_path = "your base path" / "your osrm file path" # replace with the actual path to your .osrm file
 		
 	server = subprocess.Popen(["osrm-routed", "-p", "5001", "-a", "MLD", str(osrm_path)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     
-	result1 = subprocess.run(["your nominatim path here", "search", "--query", args.loc1], text = True, capture_output = True)
-	result2 = subprocess.run(["your nominatim path here", "search", "--query", args.loc2], text = True, capture_output = True)
+	result1 = subprocess.run(["your python executable", "search", "--query", args.loc1], text = True, capture_output = True)
+	result2 = subprocess.run(["your python executable", "search", "--query", args.loc2], text = True, capture_output = True)
 
 	lat1, lon1 = coordinateRes(result1)
 	lat2, lon2 = coordinateRes(result2)

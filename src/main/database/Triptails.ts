@@ -26,10 +26,45 @@ export class TripLogging {
         );
     }
 
+
+    /* THIS IS TEMPORARY CLEARTRIP (CLEAR TRIP)*/
+    public clearTripDetails() {
+        this.db.execute(`delete from tripDetails`);
+        this.db.execute(`delete from tripLocation`);
+    }
+
     // dashboard totals from completed trip details
     public async retrieveTotalLogs() {
         return this.db.query(`
             select count(details_id) as butt, sum(milageTotal) as face from tripDetails
+        `)
+    }
+
+    public updateLogHistory(d: string, t: string) {
+        this.db.execute(`insert into documentHistory (
+                logDate, 
+                myTrip
+            )
+            values (?, ?)`,
+            [d, t]
+        );
+    }
+
+    public async retrieveLogHistory() {
+        return this.db.query(`
+            select * from documentHistory
+        `)
+    }
+
+    public deleteLogHistory(id: number) {
+        this.db.execute(`
+            delete from documentHistory where id = ?
+        `, [id])
+    }
+
+    public clearLogHistory() {
+        this.db.execute(`
+            delete from documentHistory
         `)
     }
 }

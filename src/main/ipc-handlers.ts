@@ -217,13 +217,34 @@ export function registerTripHandlers() {
     ipcMain.handle('trip:retrieveTotalLogs', async(_event) => {
         return l.retrieveTotalLogs()
     })
+
+    ipcMain.handle('trip:clearTripDetails', async(_event) => {
+        return l.clearTripDetails()
+    })
+
+    // log history handlers
+    ipcMain.handle('trip:updateLogHistory', async(_event, d, t) => {
+        return l.updateLogHistory(d, t)
+    })
+    
+    ipcMain.handle('trip:retrieveLogHistory', async(_event) => {
+        return l.retrieveLogHistory()
+    }) 
+
+    ipcMain.handle('trip:deleteLogHistory', async(_event, id) => {
+        return l.deleteLogHistory(id)
+    })
+
+    ipcMain.handle('trip:clearLogHistory', async(_event) => {
+        return l.clearLogHistory()
+    })
 }
 
 ipcMain.handle("document:distanceTool", async (_event, loc1, loc2) => {    
     const projectRoot = process.cwd()
     const scriptPath = path.join(projectRoot, "distanceTool", "distanceProcessing.py")
     
-    const pythonPath = "your python path here"
+    const pythonPath = "your python executable" // replace with the actual path to your Python executable
     
     return new Promise<number>((resolve, reject) => {
         execFile(pythonPath, [scriptPath, loc1, loc2], (error, stdout, stderr) => {
@@ -268,7 +289,7 @@ ipcMain.handle('document:OCR', async(_event, filePath: string) => {
     const dumpDir = path.join(outDir, "llm_receipt_dump.txt")
 
     return new Promise<string>((resolve, reject) => {
-        const pythonPath = "/opt/anaconda3/envs/receipt_processing/bin/python"
+        const pythonPath = "your python executable" // replace with the actual path to your Python executable
 
         execFile(pythonPath, [scriptPath, filePath, '--out', outDir], (error, stdout, stderr) => {
             if (error) {
@@ -293,7 +314,7 @@ ipcMain.handle("document:receiptTool", async (_event, filePath: string) => {
 
     return new Promise<string>((resolve, reject) => {
 
-        const pythonPath = "/opt/anaconda3/envs/receipt_processing/bin/python"
+        const pythonPath = "your python executable" // replace with the actual path to your Python executable
 
         execFile(pythonPath, [scriptPath, filePath, "--out", outDir, "--ai", "true"], (error, stdout, stderr) => {
             if (error) {

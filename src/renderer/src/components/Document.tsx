@@ -1,6 +1,8 @@
 import React from "react"
 import '../assets/popup.css';
-import { getPathForFile, performOCR, runReceiptTool, compatibleFile, enterTripDetails, updateTripDetails, retrieveTotalLogs, runDistanceTool } from "../ipc"
+import { getPathForFile, performOCR, runReceiptTool, compatibleFile, 
+    enterTripDetails, updateTripDetails, retrieveTotalLogs, runDistanceTool, 
+    updateLogHistory, retrieveLogHistory, deleteLogHistory, clearLogHistory } from "../ipc"
 // styling constants
 const BUTTON_SIZE: string = "150%";
 const FONT_SIZE: string = BUTTON_SIZE;
@@ -32,6 +34,8 @@ type DocumentState = {
     name: string,
     content: string,
     debugMsg: string,
+    historyMsg: string,
+    showHistoryDropdown: boolean,
     isDragging: boolean,
     filePath: string,
     sourceStreet: string,
@@ -43,6 +47,7 @@ type DocumentState = {
     destinationStateinUSA: string,
     destinationZip: number,
     showAutofillPopup: boolean
+    
 }
 
 /**
@@ -56,6 +61,8 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
     name: string
     content: string
     debugMsg: string
+    historyMsg: string
+    showHistoryDropdown: boolean
     isDragging: boolean
     filePath: string
     sourceStreet: string
@@ -75,6 +82,8 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         this.name = ""
         this.content = ""
         this.debugMsg = ""
+        this.historyMsg = ""
+        this.showHistoryDropdown = false
         this.isDragging = false
         this.filePath = ""
         this.sourceStreet = ""
@@ -91,6 +100,8 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
             name: "",
             content: "",
             debugMsg: "",
+            historyMsg: "",
+            showHistoryDropdown: false,
             isDragging: false,
             filePath: "",
             sourceStreet: "",
@@ -179,7 +190,6 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                 
                 this.setState({
                         content: JSON.stringify({ source, destination }, null, 2),
-                        debugMsg: tesseractResult,
                         sourceStreet: source.street,
                         sourceCity: source.city,
                         sourceStateinUSA: source.state,
@@ -265,7 +275,69 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         await runDistanceTool(sourceString, destinationString)
     }
 
-    render() {  
+    fetchForHistory = async () => {
+        const date = new Date().toISOString();
+    
+        const sourceString = this.turnIntoString(
+            this.state.sourceStreet,
+            this.state.sourceCity,
+            this.state.sourceStateinUSA,
+            this.state.sourceZip
+        );
+        const destinationString = this.turnIntoString(
+            this.state.destinationStreet,
+            this.state.destinationCity,
+            this.state.destinationStateinUSA,
+            this.state.destinationZip
+        );
+    
+        const historyString = `${date} | ${sourceString} -> ${destinationString}`;
+        
+        // update the table with the new history entry
+        await updateLogHistory(date, historyString);
+
+        this.setState({
+            historyMsg: historyString
+        });
+    
+        return historyString;
+    }
+
+    render() {
+        const historyDropdown = (
+            <div>
+                <div>
+                    <button onClick={async () => {const logs = await retrieveLogHistory(); this.setState({ historyMsg: logs });}}>
+                        refresh
+                    </button>
+        
+                    <button onClick={async () => {await clearLogHistory();}}>
+                        clear
+                    </button>
+                </div>
+        
+                <div style={{ "padding": "10px", "fontSize": "12px", maxHeight: "300px", overflowY: "auto" }}>
+                    {Array.isArray(this.state.historyMsg) && this.state.historyMsg.length > 0 ? (
+                        this.state.historyMsg.map((log) => (
+                            <div key={log.id} style={{ "padding": "10px" }}>
+                                <div>
+                                    <strong>{log.logDate}: </strong>
+                                    <span>{log.myTrip}</span>
+                                </div>
+        
+                                <button onClick={async () => {await deleteLogHistory(log.id);const logs = await retrieveLogHistory();this.setState({ historyMsg: logs });}}>
+                                    delete
+                                </button>
+                            </div>
+                        ))
+
+                    ) : (
+                        <div>no history yet</div>
+                    )}
+                </div>
+            </div>
+        );
+
         const autofillPopup = (
             <div className = "myPopUpAutofill">
                 <div className = "myPopUpBackground">
@@ -311,7 +383,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                         <button onClick={() => this.setState({ showAutofillPopup: false })}>
                             Cancel
                         </button>
-                        <button onClick={async () => {this.setState({ showAutofillPopup: false, debugMsg: "autofill confirmed" }); this.logLocation(); await this.processDistance()}}>
+                        <button onClick={async () => {this.setState({ showAutofillPopup: false, debugMsg: "autofill confirmed" }); this.logLocation(); await this.processDistance(); this.fetchForHistory()}}>
                             Use Autofill
                         </button>
                     </div>
@@ -326,43 +398,25 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                 </div>
 
                 {/* Droppable field for files */}
-                <div className = " myBoxDropOutline"
-                    onDragOver={(e) => {
-                        e.preventDefault()
-                        this.setState({ isDragging: true })
+                <div className = "myBoxDropOutline" onDragOver={(e) => {
+                    e.preventDefault() 
+                    this.setState({ isDragging: true })
                     }}
-                    onDragLeave={() => this.setState({ isDragging: false })}
-                    onDrop={this.handleDrop}
-                    >
+                    onDragLeave={() => this.setState({ isDragging: false })} onDrop={this.handleDrop}>
                     <div>
-                        {this.state.filePath ? this.state.filePath : this.state.debugMsg || "waiting for file..."}
+                        {this.state.filePath ? this.state.filePath :  "🚀"}
                     </div>
-                    <div>
-                        <div style = {{ "textAlign": "center", "top": "80px", "bottom": "10px", "position": "relative" }}>
-                            📄
-                        </div>
-                    </div>
-                    
                 </div>
 
-                <div style = {{"padding": "10px"}}>
+                <div style={{ marginTop: "10px", padding: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
                     <button onClick={this.processUpload}>
-                        Run OCR
+                        submit
                     </button>
-                    DEBUG OUTPUT : {this.debugMsg}
-                </div>
 
-                <div>
-                    <div>
-                        <h3>Result</h3>
-                        <span>{this.state.content ? "ready" : "empty"}</span>
-                    </div>
-
-                    {this.state.content ? (
-                        <pre>{this.state.content}</pre>
-                    ) : (
-                        <div/>
-                    )}
+                    <button onClick={() => this.setState({ showHistoryDropdown: !this.state.showHistoryDropdown })}>
+                        history
+                    </button>
+                    
                 </div>
             </div>
         )
@@ -371,6 +425,8 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
             <div>
                 {dropWindow}
                 {this.state.showAutofillPopup ? autofillPopup : null}
+                <div style={{ "height": "10px", "padding": "10px", "borderTop": "2px dashed var(--ink-line)", "margin": "0" }}></div>
+                {this.state.showHistoryDropdown ? historyDropdown : null}
             </div>
         )
     }

@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import { create } from 'domain';
 
 class DatabaseConnection {
 
@@ -67,6 +68,13 @@ class DatabaseConnection {
             description TEXT,
             userID INTEGER
             /* FOREIGN KEY (userID) REFERENCES users(id) */
+            )`).run()
+
+        this.db.prepare(`
+            create table if not exists documentHistory (
+                id integer primary key,
+                logDate varchar(255),
+                myTrip varchar(255)
             )`).run()
 
     }

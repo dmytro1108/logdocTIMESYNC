@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { retrieveTotalLogs } from '../ipc'
+import { retrieveTotalLogs, clearTripDetails } from '../ipc'
 
 type MyDashboardProps = {
   onClose: () => void
@@ -62,6 +62,22 @@ export class Dashboard extends React.Component<MyDashboardProps, MyDashboardStat
     })
   }
 
+  /* THIS IS TEMPORARY CLEARTRIP (CLEAR TRIP)*/
+  clearTripDetails = async () => {
+    await clearTripDetails()
+    this.setState({
+      documentCount: 0,
+      totalMiles: 0,
+      totalExpenses: 0,
+      upcomingDeadlineCount: 0
+    })
+  }
+
+  /* THIS IS TEMPORARY CLEARTRIP (CLEAR TRIP) */
+  componentDidMount = async () => {
+    await this.refreshDashboard()
+  }
+
   render() {
 
     return (
@@ -92,6 +108,7 @@ export class Dashboard extends React.Component<MyDashboardProps, MyDashboardStat
           </div>
         </div>
         <button onClick = {this.refreshDashboard}>Refresh</button>
+        <button onClick = {() => this.clearTripDetails()}>Clear Trip Details</button>
       </div>
     )
   }
