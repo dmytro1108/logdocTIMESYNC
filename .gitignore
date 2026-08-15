@@ -7,7 +7,6 @@ out/
 build/
 
 # Tools
-receiptTool/
 distanceTool/
 
 # Database
