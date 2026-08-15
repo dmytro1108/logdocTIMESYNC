@@ -1,35 +1,8 @@
-from pathlib import Path
-import ollama
+import gl
 
-
-DBG = 0
-DBG2 = 0
-LLMDBG = 0
-TMP = 0
-
-'''
-    method that seperates each line, and returns the seperated lines as an array
-'''
-def ln(a):
-    g = []
-    for i in a.splitlines():
-        i = i.strip()
-        if i != "":
-            g.append(i)
-    return g
-
-
-
-# local processing: this processing will use a configuration of ollama that will call it directly for processing
-# the processing
-
-'''
-    method will run tesseract, filter and write the output as metadata
-    method will run a local VLM  model, filter and write  the output as 
-'''
 def localProcessing(outputDir, img):
     
-    outputDir = Path(outputDir)
+    outputDir = gl.Path(outputDir)
     '''
     result = subprocess.run(
         ["/opt/miniconda3/envs/receipt_processing/bin/tesseract", str(myImage), "stdout", "-l", "eng", "--psm", "3"],
@@ -48,7 +21,7 @@ def localProcessing(outputDir, img):
     return result
 
 def llmVisionator(outputDir, img):
-    outputDir = Path(outputDir)
+    outputDir = gl.Path(outputDir)
     #toProcess = json.loads(dump)
     
     visionResults = []
@@ -74,7 +47,7 @@ def llmVisionator(outputDir, img):
     }
     """
 
-    response = ollama.generate(
+    response = gl.ollama.generate(
         model="qwen2.5vl:7b",
         prompt=prompt,
         images=[str(imagePath)],
@@ -86,14 +59,13 @@ def llmVisionator(outputDir, img):
     
     raw = response["response"].strip()
 
-    if TMP:
+    if gl.TMP:
         print(raw)
 
     result = {
         "file": img,
         "visual_text": raw.strip(),
         "vision_source": "qwen2.5-vl:7b", # ollama run qwen2.5-vl:7b
-        "vision_trust": "low"
     }
     
     visionResults.append(result)
@@ -102,9 +74,13 @@ def llmVisionator(outputDir, img):
     return visionResults
 
 if __name__ == "__main__":
-    # Example usage
-    output_directory = "C:\\Users\\Omen\\Documents\\summer2026\\TrucktimeLOGSYNC\\receiptTool\\temp"
-    image_file = "t1.jpg"
+    parser = gl.argparse.ArgumentParser()
+    parser.add_argument("filePath")
+    parser.add_argument("--out", default="./detections")
+    args = parser.parse_args()
 
-    result = localProcessing(output_directory, image_file)
-    print(result)
+    sample = args.filePath
+    baseOut = gl.Path(args.out)
+    baseOut.mkdir(parents=True, exist_ok=True)
+
+    localProcessing(baseOut, sample)

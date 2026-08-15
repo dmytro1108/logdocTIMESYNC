@@ -308,15 +308,21 @@ ipcMain.handle('document:OCR', async(_event, filePath: string) => {
 
 ipcMain.handle("document:receiptTool", async (_event, filePath: string) => {
     const projectRoot = process.cwd()
-    const scriptPath = path.join(projectRoot, "receiptTool", "steadyProcessing.py")
+    const scriptPath = path.join(projectRoot, "receiptTool", "localProcessing.py")
     const outDir = path.join(projectRoot, "receiptTool", "detections")
-    const dumpDir = path.join(outDir, "llm_receipt_dump.txt")
+    const dumpDir = path.join(outDir, "vision_artifact.txt")
 
     return new Promise<string>((resolve, reject) => {
 
-        const pythonPath = "your python executable" // replace with the actual path to your Python executable
+        const pythonPath = "/opt/anaconda3/envs/receipt_processing/bin/python"
+        
 
-        execFile(pythonPath, [scriptPath, filePath, "--out", outDir, "--ai", "true"], (error, stdout, stderr) => {
+        // MICRO-CHANGE: Clean up old run's text file
+        if (fs.existsSync(dumpDir)) {
+            fs.rmSync(dumpDir); 
+        }
+        
+        execFile(pythonPath, [scriptPath, filePath, "--out", outDir], (error, stdout, stderr) => {
             if (error) {
                 reject(stderr || error.message)
                 return

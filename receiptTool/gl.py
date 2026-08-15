@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from pathlib import Path
 from PIL import Image, ImageOps, ImageEnhance
-from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+# from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 import torch
 import argparse 
 from tqdm import tqdm

@@ -38,6 +38,7 @@ type DocumentState = {
     showHistoryDropdown: boolean,
     isDragging: boolean,
     filePath: string,
+    fileQueue: string[],
     sourceStreet: string,
     sourceCity: string,
     sourceStateinUSA: string,
@@ -47,6 +48,7 @@ type DocumentState = {
     destinationStateinUSA: string,
     destinationZip: number,
     showAutofillPopup: boolean
+
     
 }
 
@@ -104,6 +106,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
             showHistoryDropdown: false,
             isDragging: false,
             filePath: "",
+            fileQueue: [],
             sourceStreet: "",
             sourceCity: "",
             sourceStateinUSA: "",
@@ -120,23 +123,25 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         e.preventDefault()
         e.stopPropagation()
         
-        const file = e.dataTransfer.files[0]
-        const path = await getPathForFile(file)
+        // MICRO-CHANGE: Convert FileList to array and get paths for ALL dropped files
+        const files = Array.from(e.dataTransfer.files)
+        const paths = await Promise.all(files.map(f => getPathForFile(f)))
         
-        if (!path) {
+        // Filter out any files that failed to get a path
+        const validPaths = paths.filter(path => path)
+    
+        if (validPaths.length === 0) {
             this.setState({
                 isDragging: false,
-                debugMsg: "no file found",
-                filePath: ""
+                debugMsg: "no valid files found",
+                fileQueue: [] // Using queue instead of filePath
             })
             return
         } else {
             this.setState({
                 isDragging: false,
-                debugMsg: file
-                    ? `file name: ${file.name} | path: ${path}`
-                    : "no file found",
-                filePath: path
+                debugMsg: `${validPaths.length} file(s) queued`,
+                fileQueue: validPaths // Store the array of paths
             })
         }
     }
@@ -175,60 +180,52 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         return { source, destination }
     }
 
+  
     processUpload = async () => {
-        this.setState({ debugMsg: "running receipt tool..." })
-        if (!this.state.filePath) {
-            this.setState({ debugMsg: "no file to upload" })
+        // MICRO-CHANGE: Check queue length instead of single string
+        if (!this.state.fileQueue || this.state.fileQueue.length === 0) {
+            this.setState({ debugMsg: "no files to upload" })
             return
         }
-        if (!this.state.filePath.endsWith('.png') && !this.state.filePath.endsWith('.jpg') && !this.state.filePath.endsWith('.jpeg')) {
-            // fix unsupported file types
-            try {
-                const myPath = await compatibleFile(this.state.filePath)
-                const tesseractResult = await performOCR(myPath)
-                const { source, destination } = this.parseReceiptToolResult(tesseractResult)
-                
-                this.setState({
-                        content: JSON.stringify({ source, destination }, null, 2),
-                        sourceStreet: source.street,
-                        sourceCity: source.city,
-                        sourceStateinUSA: source.state,
-                        sourceZip: source.zip,
-                        destinationStreet: destination.street,
-                        destinationCity: destination.city,
-                        destinationStateinUSA: destination.state,
-                        destinationZip: destination.zip,
-                        showAutofillPopup: true
-                    })
-            } catch (err) {
-                this.setState({ 
-                    debugMsg: `error performing OCR: ${err}` })
-            }
-        } else {
-            try {
-                this.setState({ debugMsg: "running OCR tools..." })
     
-                const tesseractResult = await performOCR(this.state.filePath)
-                //const receiptToolResult = await runReceiptTool(this.state.filePath)
-                const { source, destination } = this.parseReceiptToolResult(tesseractResult)
-                
-                this.setState({
-                    content: JSON.stringify({ source, destination }, null, 2),
-                    debugMsg: tesseractResult,
-                    sourceStreet: source.street,
-                    sourceCity: source.city,
-                    sourceStateinUSA: source.state,
-                    sourceZip: source.zip,
-                    destinationStreet: destination.street,
-                    destinationCity: destination.city,
-                    destinationStateinUSA: destination.state,
-                    destinationZip: destination.zip,
-                    showAutofillPopup: true
-                })
-            } catch (err) {
-                this.setState({ 
-                    debugMsg: `error performing OCR: ${err}` })
+        // MICRO-CHANGE: Grab the first file in the queue
+        const currentFile = this.state.fileQueue[0]
+        this.setState({ debugMsg: `processing ${currentFile}...` })
+    
+        const isImage = currentFile.endsWith('.png') || currentFile.endsWith('.jpg') || currentFile.endsWith('.jpeg');
+    
+        try {
+            let resultData;
+    
+            if (!isImage) {
+                const myPath = await compatibleFile(currentFile)
+                resultData = await performOCR(myPath)
+            } else {
+                resultData = await runReceiptTool(currentFile)
             }
+    
+            const { source, destination } = this.parseReceiptToolResult(resultData)
+            
+            // MICRO-CHANGE: Remove the processed file from the queue
+            const remainingQueue = this.state.fileQueue.slice(1);
+    
+            this.setState({
+                fileQueue: remainingQueue, // Update the queue
+                content: JSON.stringify({ source, destination }, null, 2),
+                debugMsg: resultData,
+                sourceStreet: source.street,
+                sourceCity: source.city,
+                sourceStateinUSA: source.state,
+                sourceZip: source.zip,
+                destinationStreet: destination.street,
+                destinationCity: destination.city,
+                destinationStateinUSA: destination.state,
+                destinationZip: destination.zip,
+                showAutofillPopup: true // Pops up for the user to review
+            })
+    
+        } catch (err) {
+            this.setState({ debugMsg: `error processing file: ${err}` })
         }
     }
 
@@ -339,58 +336,75 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         );
 
         const autofillPopup = (
-            <div className = "myPopUpAutofill">
-                <div className = "myPopUpBackground">
+            <div className="myPopUpAutofill">
+                <div className="myPopUpBackground">
                     <div>
-                        <button onClick={() => this.setState({ showAutofillPopup: false })}>×</button>
+                        {/* MICRO-CHANGE: Skip to next file on close */}
+                        <button onClick={() => {
+                            this.setState({ showAutofillPopup: false });
+                            if (this.state.fileQueue && this.state.fileQueue.length > 0) this.processUpload();
+                        }}>×</button>
                     </div>
-
+        
                     <div>
                         <div>
                             <h3>Source</h3>
-
                             <label>Street</label>
                             <input type="text" value={this.state.sourceStreet} onChange={(e) => this.setState({ sourceStreet: e.target.value })} />
-
+        
                             <label>City</label>
                             <input type="text" value={this.state.sourceCity} onChange={(e) => this.setState({ sourceCity: e.target.value })} />
-
+        
                             <label>State</label>
                             <input type="text" value={this.state.sourceStateinUSA} onChange={(e) => this.setState({ sourceStateinUSA: e.target.value })} />
-
+        
                             <label>Zip</label>
                             <input type="number" value={this.state.sourceZip} onChange={(e) => this.setState({ sourceZip: Number(e.target.value) || 0 })} />
                         </div>
-
+        
                         <div>
                             <h3>Destination</h3>
-
                             <label>Street</label>
                             <input type="text" value={this.state.destinationStreet} onChange={(e) => this.setState({ destinationStreet: e.target.value })} />
-
+        
                             <label>City</label>
                             <input type="text" value={this.state.destinationCity} onChange={(e) => this.setState({ destinationCity: e.target.value })} />
-
+        
                             <label>State</label>
                             <input type="text" value={this.state.destinationStateinUSA} onChange={(e) => this.setState({ destinationStateinUSA: e.target.value })} />
-
+        
                             <label>Zip</label>
                             <input type="number" value={this.state.destinationZip} onChange={(e) => this.setState({ destinationZip: Number(e.target.value) || 0 })} />
                         </div>
                     </div>
-
+        
                     <div>
-                        <button onClick={() => this.setState({ showAutofillPopup: false })}>
+                        {/* MICRO-CHANGE: Skip to next file on cancel */}
+                        <button onClick={() => {
+                            this.setState({ showAutofillPopup: false });
+                            if (this.state.fileQueue && this.state.fileQueue.length > 0) this.processUpload();
+                        }}>
                             Cancel
                         </button>
-                        <button onClick={async () => {this.setState({ showAutofillPopup: false, debugMsg: "autofill confirmed" }); this.logLocation(); await this.processDistance(); this.fetchForHistory()}}>
+                        
+                        {/* MICRO-CHANGE: Run existing logic, then trigger the next file in the queue */}
+                        <button onClick={async () => {
+                            this.setState({ showAutofillPopup: false, debugMsg: "autofill confirmed" }); 
+                            this.logLocation(); 
+                            await this.processDistance(); 
+                            this.fetchForHistory();
+                            
+                            if (this.state.fileQueue && this.state.fileQueue.length > 0) {
+                                this.processUpload();
+                            }
+                        }}>
                             Use Autofill
                         </button>
                     </div>
                 </div>
             </div>
         )
-
+        
         const dropWindow = (
             <div>    
                 <div style = {{"right": "100px", "position": "absolute", "textAlign": "center"}}>
@@ -416,7 +430,12 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                     <button onClick={() => this.setState({ showHistoryDropdown: !this.state.showHistoryDropdown })}>
                         history
                     </button>
-                    
+                    {/* Update UI to show count */}
+                    <div>
+                        {this.state.fileQueue?.length > 0 
+                            ? `${this.state.fileQueue.length} file(s) queued 🚀` 
+                            : "Drop files here 🚀"}
+                    </div>
                 </div>
             </div>
         )
