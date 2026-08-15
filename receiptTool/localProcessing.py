@@ -1,5 +1,25 @@
 import gl
 
+def parse_vlm_address(address_string, role_name):
+    """Helper to split the VLM's comma-separated string into a JS-compatible dictionary"""
+    if not address_string:
+        return {"role": role_name, "street": "", "city": "", "state": "", "zip": ""}
+    
+    # Split by comma and strip whitespace
+    parts = [p.strip() for p in address_string.split(",")]
+    
+    # Pad with empty strings in case the VLM missed parts (e.g., just "Street, City")
+    while len(parts) < 4:
+        parts.append("")
+        
+    return {
+        "role": role_name,
+        "street": parts[0],
+        "city": parts[1],
+        "state": parts[2],
+        "zip": parts[3]
+    }
+
 def localProcessing(outputDir, img):
     
     outputDir = gl.Path(outputDir)
@@ -24,8 +44,6 @@ def llmVisionator(outputDir, img):
     outputDir = gl.Path(outputDir)
     #toProcess = json.loads(dump)
     
-    visionResults = []
-
     imagePath = outputDir / img # look at this pic
 
     # Use a raw string, no variables. Keep it incredibly direct.
@@ -62,16 +80,30 @@ def llmVisionator(outputDir, img):
     if gl.TMP:
         print(raw)
 
+    vlmOut = gl.json.loads(raw)
+
+    candidates = []
+    
+    source_obj = parse_vlm_address(vlmOut.get("source_address", ""), "source")
+    candidates.append(source_obj)
+    
+    dest_obj = parse_vlm_address(vlmOut.get("destination_address", ""), "destination")
+    candidates.append(dest_obj)
+
     result = {
         "file": img,
         "visual_text": raw.strip(),
         "vision_source": "qwen2.5-vl:7b", # ollama run qwen2.5-vl:7b
     }
     
-    visionResults.append(result)
     # imagePath.unlink() # removes the image
 
-    return visionResults
+    dumpPath = outputDir / "vision_artifact.txt"
+
+    with open(dumpPath, "w", encoding="utf-8") as f:
+        gl.json.dump(candidates, f, indent=2)
+        
+    return candidates
 
 if __name__ == "__main__":
     parser = gl.argparse.ArgumentParser()
