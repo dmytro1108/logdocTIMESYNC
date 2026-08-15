@@ -5,12 +5,13 @@ from PIL import Image, ImageOps, ImageEnhance
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 import torch
 import argparse 
-from pathlib import Path
 from tqdm import tqdm
 import json
 import ollama
 import subprocess
 import re
+import os
+from cryptography.fernet import Fernet
 
 #device = "mps" if torch.backends.mps.is_available() else "cpu"
 #processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
@@ -32,3 +33,17 @@ def ln(a):
         if i != "":
             g.append(i)
     return g
+
+def write_key():
+    """
+    Generates a key and save it into a file
+    """
+    key = gl.Fernet.generate_key()
+    with open("key.key", "wb") as key_file:
+        key_file.write(key)
+
+def load_key():
+    """
+    Loads the key from the current directory named `key.key`
+    """
+    return open("key.key", "rb").read()
