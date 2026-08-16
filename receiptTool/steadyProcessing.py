@@ -1,5 +1,5 @@
 import gl
-from regexTools import metaProcessing
+from rt import metaProcessing
 """
 
 The file contains functions for pre-processing an image for TrOCR handwritten text detection

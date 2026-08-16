@@ -1,5 +1,5 @@
 import gl
-from regexTools import extractAddressPairs, assignAddressRoles, buildAutofillFromCandidates
+from rt import extractAddressPairs, assignAddressRoles, buildAutofillFromCandidates
 
 
 '''

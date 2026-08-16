@@ -306,7 +306,7 @@ ipcMain.handle('document:OCR', async(_event, filePath: string) => {
     })
 })
 
-ipcMain.handle("document:receiptTool", async (_event, filePath: string) => {
+ipcMain.handle("document:receiptTool", async (_event, filePath: string, modelName: string) => {
     const projectRoot = process.cwd()
     const scriptPath = path.join(projectRoot, "receiptTool", "localProcessing.py")
     const outDir = path.join(projectRoot, "receiptTool", "detections")
@@ -314,15 +314,9 @@ ipcMain.handle("document:receiptTool", async (_event, filePath: string) => {
 
     return new Promise<string>((resolve, reject) => {
 
-        const pythonPath = "/opt/anaconda3/envs/receipt_processing/bin/python"
+        const pythonPath = "/opt/miniconda3/envs/receipt_processing/bin/python"
         
-
-        // MICRO-CHANGE: Clean up old run's text file
-        if (fs.existsSync(dumpDir)) {
-            fs.rmSync(dumpDir); 
-        }
-        
-        execFile(pythonPath, [scriptPath, filePath, "--out", outDir], (error, stdout, stderr) => {
+        execFile(pythonPath, [scriptPath, filePath, "--out", outDir, "--model", modelName], (error, stdout, stderr) => {
             if (error) {
                 reject(stderr || error.message)
                 return

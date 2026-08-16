@@ -118,8 +118,8 @@ export async function performOCR(filePath: string): Promise<string> {
 }
 
 // Receipt tool
-export async function runReceiptTool(filePath: string): Promise<string> {
-  return window.electron.ipcRenderer.invoke('document:receiptTool', filePath)
+export async function runReceiptTool(filePath: string, modelName: string): Promise<string> {
+  return window.electron.ipcRenderer.invoke('document:receiptTool', filePath, modelName)
 }
 
 // Compatible file
