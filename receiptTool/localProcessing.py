@@ -90,16 +90,42 @@ def llmVisionator(outputDir, img, modelName):
             }
         )
     
-    raw = response["response"].strip()
+        raw = response["response"].strip()
+
+    # --- START OF FIX: Pre-clean the raw string for markdown wrappers ---
+    # 1. Check if the JSON is wrapped in markdown code blocks (```json ... ```)
+    if raw.startswith("```"):
+        try:
+            # Strip markdown start and end markers
+            raw = raw.strip('`').replace("json", "").strip()
+        except Exception:
+            pass # If stripping fails, use the original raw value
+
+    # 2. Defensive check for empty or corrupted data
+    if not raw:
+        print("Warning: LLM returned an empty response.")
+        return {"source_address": "", "destination_address": ""}
+    # --- END OF FIX ---
+
 
     # temp validation pass
-    # raw = f'{{"source_address": "{modelName}", "destination_address": "456 Delivery Lane, Seattle, WA, 98101"}}'
     if gl.TMP:
         print(raw)
 
-    vlmOut = gl.json.loads(raw)
+    # Use a Try/Except block to handle parsing failures gracefully
+    try:
+        vlmOut = gl.json.loads(raw)
+    except gl.json.JSONDecodeError as e:
+        print(f"CRITICAL JSON DECODE ERROR: Failed to parse LLM response. Error: {e}")
+        # Fallback: If JSON parsing fails, return empty addresses and log the raw output for debugging.
+        return {"source_address": "", "destination_address": ""}
+
+
     s = vlmOut.get("source_address", "")
     d = vlmOut.get("destination_address", "")
+
+    # ... rest of the function remains the same
+
 
     candidates = []
 

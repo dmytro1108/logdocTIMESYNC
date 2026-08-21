@@ -2,16 +2,17 @@ import cv2
 import numpy as np
 from pathlib import Path
 from PIL import Image, ImageOps, ImageEnhance
-# from transformers import TrOCRProcessor, VisionEncoderDecoderModel
-import torch
 import argparse 
-from tqdm import tqdm
 import json
 import ollama
 import subprocess
 import re
 import os
 from cryptography.fernet import Fernet
+import zipfile
+from socket import *
+import sys
+import time
 
 #device = "mps" if torch.backends.mps.is_available() else "cpu"
 #processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")

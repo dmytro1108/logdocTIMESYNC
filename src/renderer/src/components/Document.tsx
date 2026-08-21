@@ -38,8 +38,10 @@ type DocumentState = {
     showHistoryDropdown: boolean,
     showAutofillPopup: boolean,
     showModelDropdown: boolean,
+    showModeDropdown: boolean,
     isDragging: boolean,
     selectedModel: string,
+    selectedMode: string,
     filePath: string,
     sourceStreet: string,
     sourceCity: string,
@@ -66,6 +68,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
     showHistoryDropdown: boolean
     isDragging: boolean
     selectedModel: string
+    selectedMode: string
     filePath: string
     sourceStreet: string
     sourceCity: string
@@ -77,6 +80,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
     destinationZip: number
     showAutofillPopup: boolean
     showModelDropdown: boolean
+    showModeDropdown: boolean
 
     constructor(props: DocumentProps) {
         super(props)
@@ -88,6 +92,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         this.showHistoryDropdown = false
         this.isDragging = false
         this.selectedModel = ""
+        this.selectedMode = ""
         this.filePath = ""
         this.sourceStreet = ""
         this.sourceCity = ""
@@ -99,14 +104,17 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         this.destinationZip = 0
         this.showAutofillPopup = false
         this.showModelDropdown = false
+        this.showModeDropdown = false
         this.state = {
             name: "",
             content: "",
             debugMsg: "",
             historyMsg: "",
             showHistoryDropdown: false,
+            showModeDropdown: false,
             isDragging: false,
             selectedModel: "",
+            selectedMode: "",
             filePath: "",
             sourceStreet: "",
             sourceCity: "",
@@ -309,6 +317,20 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
     }
 
     render() {
+        const modeDropdown = (
+            <div style={{ "padding": "10px", "fontSize": "12px", maxHeight: "300px", overflowY: "auto" }}>
+                <div style={{ "padding": "5px" }}>
+                    <button style={{background: this.state.selectedMode === "local" ? "var(--ink-golden)" : undefined, color: this.state.selectedMode === "local" ? "#111111" : undefined}} onClick={() => this.setState({ selectedMode: "local", showModeDropdown: false })}>
+                        local
+                    </button>
+                </div>
+                <div style={{ "padding": "5px" }}>
+                <button style={{background: this.state.selectedMode === "remote" ? "var(--ink-golden)" : undefined, color: this.state.selectedMode === "remote" ? "#111111" : undefined}} onClick={() => this.setState({ selectedMode: "remote", showModeDropdown: false })}>
+                        remote
+                    </button>
+                </div>
+            </div>
+        );
 
         const modelDropdown = (
             <div style={{ "padding": "10px", "fontSize": "12px", maxHeight: "300px", overflowY: "auto" }}>
@@ -424,14 +446,14 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                     this.setState({ isDragging: true })
                     }}
                     onDragLeave={() => this.setState({ isDragging: false })} onDrop={this.handleDrop}>
-                    <div>
-                        {this.state.filePath ? this.state.filePath :  "🚀"}
+                    <div style={{"fontSize": "20px", "color": this.state.isDragging ? "var(--ink-golden)" : "var(--ink-text)"}}>
+                        {this.state.filePath ? this.state.filePath :  "launch zone 🚀"}
                     </div>
                 </div>
 
                 <div style={{ marginTop: "10px", padding: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
                     <button onClick={this.processUpload}>
-                        submit
+                        launch
                     </button>
                     {this.state.debugMsg}
 
@@ -441,6 +463,10 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                     
                     <button onClick={() => this.setState({ showModelDropdown: !this.state.showModelDropdown })}>
                         model
+                    </button>
+
+                    <button onClick={() => this.setState({ showModeDropdown: !this.state.showModeDropdown })}>
+                        mode
                     </button>
                 </div>
             </div>
@@ -453,6 +479,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                 <div style={{ "height": "10px", "padding": "10px", "borderTop": "2px dashed var(--ink-line)", "margin": "0" }}></div>
                 {this.state.showHistoryDropdown ? historyDropdown : null}
                 {this.state.showModelDropdown ? modelDropdown : null}
+                {this.state.showModeDropdown ? modeDropdown : null}
             </div>
         )
     }
