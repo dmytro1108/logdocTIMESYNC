@@ -46,6 +46,7 @@ def llmVisionator(outputDir, img, modelName):
     
     imagePath = outputDir / img # look at this pic
 
+    raw = ""
 
     if modelName == "moondream":
 
@@ -60,6 +61,8 @@ def llmVisionator(outputDir, img, modelName):
             prompt=prompt,
             images=[str(imagePath)],
         )
+
+        raw = response["response"].strip()
 
     else:
         prompt = """
@@ -142,7 +145,10 @@ def llmVisionator(outputDir, img, modelName):
     with open(dumpPath, "w", encoding="utf-8") as f:
         gl.json.dump(candidates, f, indent=2)
         
-    return candidates
+    return {
+        "source_address": source_obj,
+        "destination_address": dest_obj
+    }
 
 if __name__ == "__main__":
     parser = gl.argparse.ArgumentParser()

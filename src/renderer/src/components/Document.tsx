@@ -2,29 +2,8 @@ import React from "react"
 import '../assets/popup.css';
 import { getPathForFile, performOCR, runReceiptTool, compatibleFile, 
     enterTripDetails, updateTripDetails, retrieveTotalLogs, runDistanceTool, 
-    updateLogHistory, retrieveLogHistory, deleteLogHistory, clearLogHistory } from "../ipc"
+    updateLogHistory, retrieveLogHistory, deleteLogHistory, clearLogHistory, spinUpRemote} from "../ipc"
 // styling constants
-const BUTTON_SIZE: string = "150%";
-const FONT_SIZE: string = BUTTON_SIZE;
-const TEXT_COLOR: string = "white";
-
-const BUTTON_HEIGHT: string = "50px"; // for buttons
-const BUTTON_WIDTH: string = "100px";
-const BUTTON_BORDER_COLOR: string = "white";
-const BUTTON_BORDER_WIDTH: string = "2px";
-const BUTTON_BORDER_RADIUS: string = "8px";
-const BUTTON_BACKGROUND_COLOR: string = "transparent";
-
-const BOX_HEIGHT: string = "200px";
-const BOX_WIDTH: string = "300px";
-const BOX_BORDER_COLOR: string = "white";
-
-const TOOL_PANEL_BACKGROUND: string = "#111";
-const TOOL_SOFT_BACKGROUND: string = "rgba(255, 255, 255, 0.04)";
-const TOOL_BORDER: string = `${BUTTON_BORDER_WIDTH} solid ${BUTTON_BORDER_COLOR}`;
-const TOOL_RADIUS: string = "12px";
-const TOOL_MUTED_TEXT: string = "#d8d8d8";
-const TOOL_FIELD_BACKGROUND: string = "rgba(255, 255, 255, 0.06)";
 
 type DocumentProps = {
     onClose: () => void
@@ -39,10 +18,11 @@ type DocumentState = {
     showAutofillPopup: boolean,
     showModelDropdown: boolean,
     showModeDropdown: boolean,
+    showModeOptionsDropdown:boolean,
     isDragging: boolean,
-    selectedModel: string,
     selectedMode: string,
     filePath: string,
+    filePaths: string[],
     sourceStreet: string,
     sourceCity: string,
     sourceStateinUSA: string,
@@ -70,6 +50,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
     selectedModel: string
     selectedMode: string
     filePath: string
+    filePaths: string[]
     sourceStreet: string
     sourceCity: string
     sourceStateinUSA: string
@@ -81,7 +62,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
     showAutofillPopup: boolean
     showModelDropdown: boolean
     showModeDropdown: boolean
-
+    showModeOptionsDropdown: boolean
     constructor(props: DocumentProps) {
         super(props)
 
@@ -94,6 +75,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         this.selectedModel = ""
         this.selectedMode = ""
         this.filePath = ""
+        this.filePaths = []
         this.sourceStreet = ""
         this.sourceCity = ""
         this.sourceStateinUSA = ""
@@ -105,6 +87,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         this.showAutofillPopup = false
         this.showModelDropdown = false
         this.showModeDropdown = false
+        this.showModeOptionsDropdown = false
         this.state = {
             name: "",
             content: "",
@@ -113,9 +96,9 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
             showHistoryDropdown: false,
             showModeDropdown: false,
             isDragging: false,
-            selectedModel: "",
             selectedMode: "",
             filePath: "",
+            filePaths: [],
             sourceStreet: "",
             sourceCity: "",
             sourceStateinUSA: "",
@@ -125,7 +108,8 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
             destinationStateinUSA: "",
             destinationZip: 0,
             showAutofillPopup: false,
-            showModelDropdown: false
+            showModelDropdown: false,
+            showModeOptionsDropdown: false
         }
     }
 
@@ -133,23 +117,23 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         e.preventDefault()
         e.stopPropagation()
         
-        const file = e.dataTransfer.files[0]
-        const path = await getPathForFile(file)
+        const files = Array.from(e.dataTransfer.files)
+        const paths = (await Promise.all(files.map((file) => getPathForFile(file)))).filter(Boolean)
         
-        if (!path) {
+        if (paths.length === 0) {
             this.setState({
                 isDragging: false,
-                debugMsg: "no file found",
-                filePath: ""
+                debugMsg: "no files found",
+                filePaths: []
             })
             return
         } else {
             this.setState({
                 isDragging: false,
-                debugMsg: file
-                    ? `file name: ${file.name} | path: ${path}`
+                debugMsg: files
+                    ? `file name: ${files[0].name} | path: ${paths}`
                     : "no file found",
-                filePath: path
+                filePaths: paths
             })
         }
     }
@@ -222,7 +206,7 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
                 this.setState({ debugMsg: "running OCR tools..." })
     
                 // const tesseractResult = await performOCR(this.state.filePath)
-                const v = await runReceiptTool(this.state.filePath, this.state.selectedModel)
+                const v = await runReceiptTool(this.state.filePath, this.selectedModel)
                 const { source, destination } = this.parseReceiptToolResult(v)
                 
                 this.setState({
@@ -316,18 +300,72 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         return historyString;
     }
 
+    spinUpServer = async (t:string, md: string, filesJson: string) => {
+
+        await spinUpRemote(t, md);
+        this.setState({
+            debugMsg: `started server: live running ${md}, with ${t} throttle`
+        });
+    }
+
+    turnFilesListIntoJson = (files: string[]) => {
+        const filesJson = files.map((filePath) => {
+            return { filePath }
+        })
+        return JSON.stringify(filesJson)
+    }
+    
     render() {
+    
+        const serverOptionsDropdown = (
+            <div style={{ padding: "10px", fontSize: "12px", maxHeight: "300px", overflowY: "auto" }}>
+                <div style={{ padding: "5px" }}>
+                    <div>throttle speed options</div>
+                    <div style={{ padding: "5px" }}>
+                        <button onClick={() => { }}>
+                            50s
+                        </button>
+                        <button onClick={() => {  }}>
+                            100s
+                        </button>
+                        <button onClick={() => { this.selectedModel == "moondream" ? this.spinUpServer("300", "moondream",this.turnFilesListIntoJson(this.state.filePaths || [])) : this.spinUpServer("300", "qwen2.5vl:7b", this.turnFilesListIntoJson(this.state.filePaths || [])) }}>
+                            300s
+                        </button>
+                        {/** also make sure to contain a button to choose the model for the remote to use */}
+                    </div>
+                    <button > {/** TODO: kill process on all platforms, build it myself to understand how processes work */}
+                        terminate server
+                    </button>
+                </div>
+            </div>
+        );
+    
+        const modeOptionsDropdown = (
+            <div style={{ padding: "10px", fontSize: "12px", maxHeight: "300px", overflowY: "auto" }}>
+                <div style={{ padding: "5px" }}>
+                    <button>
+                        spin up server
+                    </button>
+                    {this.state.showModeOptionsDropdown ? serverOptionsDropdown : undefined}
+                    <button>
+                        run as client
+                    </button>
+                </div>
+            </div>
+        );
+    
         const modeDropdown = (
-            <div style={{ "padding": "10px", "fontSize": "12px", maxHeight: "300px", overflowY: "auto" }}>
-                <div style={{ "padding": "5px" }}>
-                    <button style={{background: this.state.selectedMode === "local" ? "var(--ink-golden)" : undefined, color: this.state.selectedMode === "local" ? "#111111" : undefined}} onClick={() => this.setState({ selectedMode: "local", showModeDropdown: false })}>
+            <div style={{ padding: "10px", fontSize: "12px", maxHeight: "300px", overflowY: "auto" }}>
+                <div style={{ padding: "5px" }}>
+                    <button style={{ background: this.state.selectedMode === "local" ? "var(--ink-golden)" : undefined, color: this.state.selectedMode === "local" ? "#111111" : undefined }} onClick={() => this.setState({ selectedMode: "local", showModeDropdown: false })}>
                         local
                     </button>
                 </div>
-                <div style={{ "padding": "5px" }}>
-                <button style={{background: this.state.selectedMode === "remote" ? "var(--ink-golden)" : undefined, color: this.state.selectedMode === "remote" ? "#111111" : undefined}} onClick={() => this.setState({ selectedMode: "remote", showModeDropdown: false })}>
+                <div style={{ padding: "5px" }}>
+                    <button style={{ background: this.state.selectedMode === "remote" ? "var(--ink-golden)" : undefined, color: this.state.selectedMode === "remote" ? "#111111" : undefined }} onClick={() => this.setState({ selectedMode: "remote", showModeOptionsDropdown: true })}>
                         remote
                     </button>
+                    {this.state.showModeOptionsDropdown ? modeOptionsDropdown : undefined}
                 </div>
             </div>
         );
@@ -335,12 +373,12 @@ export class Document extends React.Component<DocumentProps, DocumentState> {
         const modelDropdown = (
             <div style={{ "padding": "10px", "fontSize": "12px", maxHeight: "300px", overflowY: "auto" }}>
                 <div style={{ "padding": "5px" }}>
-                    <button onClick={() => this.setState({ selectedModel: "moondream", showModelDropdown: false })}>
+                    <button onClick={() => {this.selectedModel = "moondream" ,this.setState({ showModelDropdown: false, debugMsg: "selected moondream" })}}>
                         moondream
                     </button>
                 </div>
                 <div style={{ "padding": "5px" }}>
-                    <button onClick={() => this.setState({ selectedModel: "qwen2.5vl:7b", showModelDropdown: false })}>
+                    <button onClick={() => {this.selectedModel = "qwen2.5vl:7b", this.setState({ showModelDropdown: false, debugMsg: "qwen2.5vl:7b" })}}>
                         qwen2.5-vl:7b
                     </button>
                 </div>

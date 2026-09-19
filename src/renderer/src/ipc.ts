@@ -122,6 +122,10 @@ export async function runReceiptTool(filePath: string, modelName: string): Promi
   return window.electron.ipcRenderer.invoke('document:receiptTool', filePath, modelName)
 }
 
+export async function spinUpRemote(tSpeed: string, modelName: string): Promise<string> {
+  return window.electron.ipcRenderer.invoke('remote:spinUpServer', tSpeed, modelName)
+}
+
 // Compatible file
 export async function compatibleFile(filePath: string): Promise<string> {
   return window.electron.ipcRenderer.invoke('document:compatibleFile', filePath)

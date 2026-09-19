@@ -12,14 +12,16 @@ from cryptography.fernet import Fernet
 import zipfile
 from socket import *
 import sys
+import threading
 import time
+import shutil
 
 #device = "mps" if torch.backends.mps.is_available() else "cpu"
 #processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
 #model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten").to(device)
 #model.eval()
 
-DBG = 0
+DBG = 1
 DBG2 = 0
 LLMDBG = 0
 TMP = 0

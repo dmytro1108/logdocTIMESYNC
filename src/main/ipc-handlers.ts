@@ -332,6 +332,25 @@ ipcMain.handle("document:receiptTool", async (_event, filePath: string, modelNam
     })
 })
 
+ipcMain.handle("remote:spinUpServer", async (_event, throttleSpeed: string, modelName: string) => {
+    const projectRoot = process.cwd()
+    const scriptPath = path.join(projectRoot, "receiptTool", "remoteProcessing.py") // receiptTool/remoteProcessing.py
+
+    return new Promise<string>((resolve, reject) => {
+
+        const pythonPath = "/opt/miniconda3/envs/receipt_processing/bin/python"
+        
+        execFile(pythonPath, [scriptPath, "--throttleSpeed", throttleSpeed, "--modelName",modelName], (error, stdout, stderr) => {
+            if (error) {
+                reject(stderr || error.message)
+                return
+            }
+
+            resolve("")
+        })
+	})
+})
+
 ipcMain.handle("document:compatibleFile", async (_event, filePath: string) => {
     return new Promise<string>((resolve, reject) => {
         const parsedPath = path.parse(filePath) // build a path as the output
