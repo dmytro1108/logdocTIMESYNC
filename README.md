@@ -1,6 +1,6 @@
-# TrucktimeLOGSYNC
+# logdocTIMESYNC
 
-TrucktimeLOGSYNC is an utility app whose purpose is to provide a truckers enviornment list of tools, with logging, miles calculator, display tax related notifications and turn their data into insightful summaries.
+logdocTIMESYNC is an utility app whose purpose is to provide business utility tools, with logging, calculating and document based insight.
 
 <img src="./resources/1.png" alt="demo1" width="600">
 
